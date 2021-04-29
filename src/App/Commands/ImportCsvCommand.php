@@ -3,17 +3,33 @@ declare(strict_types=1);
 
 namespace App\App\Commands;
 
-use App\Entity\Product;
-use App\Service\Analyze;
 use App\Service\ImportCsv;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use App\Controller\CheckCsvInputController;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Helper\Table;
 
+/**
+ * Main command to import CSV
+*/
 final class ImportCsvCommand extends Command
 {
+    /**
+     * @var object object for initializing main method application
+     */
+    private object $process;
+
+    /**
+     * @param ImportCsv $process
+    */
+    public function __construct(ImportCsv $process)
+    {
+        parent::__construct();
+        $this->process = $process;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -21,47 +37,65 @@ final class ImportCsvCommand extends Command
     {
         $this
             ->setName('command:import')
-            ->setDescription('This command will ask you for name and surname and print them back.')
+            ->setDescription('This command import CSV in DB.')
+            ->addArgument('test', InputArgument::OPTIONAL)
         ;
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) :int
     {
         $io = new SymfonyStyle($input, $output);
+        // здесь можно изменить аргументы проверки с str на bool
+        $argument = $input->getArgument('test') ?? 'no argument';
 
         do {
             $pathFile = $io->ask('The path to CSV-file');
         } while ($pathFile === null);
 
-        $importCsvService = new ImportCsv();
-        $res = $importCsvService->processImport();
+        $arrayFilterData = $this->process->processImport($pathFile, $argument);
 
-        // надо запустить основной класс и передать
+        if(empty($arrayFilterData['countRelevantItems'])) {
+            $io->error('not get data');
 
-//        $importService = new CheckCsvInputController();
-//// set value in properties
-//        $importService->setPathCsv($pathFile);
-//// checked valid format
-//        $checkFormat = $importService->checkFormat($pathFile);
-//
-//        if($checkFormat == 0) {
-//            $io->success('This command is working only .csv');
-//        }
-//
-//        $readFile = new ReadCsvController();
-//
-//        $readFile->setPathCsv($pathFile);
-//
-//        $res = $readFile->deserializeFile($pathFile);
-//
-        $io->success($res);
+            return 0;
+        }
+
+        if($arrayFilterData['status add'] == true) {
+            $io->success('DB OK');
+        } else {
+            $io->note('Data not added to DB');
+        }
+
+        $incr = $arrayFilterData['incorrectItems'];
+        $headers = $arrayFilterData['headers'];
+        $output->writeln(['All got products - ',]);
+        $output->writeln($arrayFilterData['countAllItems']);
+        $output->writeln(['',]);
+        $output->writeln(['Relevant products - ',]);
+        $output->writeln($arrayFilterData['countRelevantItems']);
+        $output->writeln(['',]);
+        $output->writeln(['All incorrect products - ',]);
+        $output->writeln($arrayFilterData['countIncorrectItems']);
+        $output->writeln(['',]);
+        $output->writeln(['Not import these items',]);
+        $table = new Table($output);
+        $roles = [];
+
+        foreach ((array)$incr as $items=> $item){
+            array_push($roles, $item);
+        }
+
+        $table
+            ->setHeaders([$headers])
+            ->setRows($roles)
+        ;
+        $table->render();
 
         return 1;
     }
 }
-
 
 

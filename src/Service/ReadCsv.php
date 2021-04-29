@@ -4,30 +4,39 @@ declare(strict_types=1);
 namespace App\Service;
 
 use League\Csv\Reader;
-
+/**
+ * Deserialize csv in to array
+*/
 class ReadCsv
 {
     /**
-     * Deserialize csv to array
-     *
-     * @param string $fileCSv
-     *
+     * @var array
+    */
+    private array $arrayAllItems;
+    /**
+     * @param string $pathFile
      * @return array
     */
-    public function deserializeFile(string $fileCSv)
+    public function deserializeFile(string $pathFile): array
     {
-        $csv = Reader::createFromPath($fileCSv, 'r');
-        $csv->setHeaderOffset(0);
-        $header = $csv->getHeader();
-        $records = $csv->getRecords();
-        $count = $csv->count();
-        $arrayAllItems['header'] = $header;
-        $arrayAllItems['count'] = $count;
+        try{
+            $csv = Reader::createFromPath($pathFile, 'r');
+            $csv->setHeaderOffset(0);
+            $header = $csv->getHeader();
+            $records = $csv->getRecords();
+            $count = $csv->count();
+            $this->arrayAllItems['header'] = $header;
+            $this->arrayAllItems['count'] = $count;
 
-        foreach ($records as $offset => $record) {
-            $arrayAllItems['All products'][$record['Product Code']] = $record;
+            foreach ($records as $key => $record) {
+                $this->arrayAllItems['All products'][$record['Product Code']] = $record;
+            }
+
+            return $this->arrayAllItems;
+        } catch (\Exception $exception){
+            $this->arrayAllItems['error'] = 'error';
+
+            return $this->arrayAllItems;
         }
-
-        return $arrayAllItems;
     }
 }

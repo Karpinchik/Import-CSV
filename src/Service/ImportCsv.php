@@ -3,30 +3,63 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Service\CheckCsv;
-use App\Service\ReadCsv;
-use App\Service\Analyze;
-use App\Service\AddDataToDb;
-
-
+/**
+ * main container for services
+*/
 class ImportCsv
 {
     /**
-     * @var string the path to csv file
+     * @var object
     */
-    public $pathFile = 'stock.csv';
-    public $checkCsv;
-    public $readCsv;
-    public $analyze;
-    public $addDataToDb;
+    public object $checkCsv;
 
     /**
-     * @param \App\Service\CheckCsv $checkCsv
-     * @param \App\Service\ReadCsv $readCsv
-     * @param \App\Service\Analyze $analyze
-     * @param \App\Service\AddDataToDb $addDataToDb
+     * @var object
      */
-    public function __constructor(CheckCsv $checkCsv, ReadCsv $readCsv, Analyze $analyze, AddDataToDb $addDataToDb)
+    public object $readCsv;
+
+    /**
+     * @var object
+     */
+    public object $analyze;
+
+    /**
+     * @var object
+     */
+    public object $addDataToDb;
+
+    /**
+     * @var string
+     */
+    public string $pathFile;
+
+    /**
+     * @var string
+     */
+    public string $argument;
+
+    /**
+     * @var array The array after deserialize
+    */
+    public array $arrayData;
+
+    /**
+     * @var array The array after filter
+    */
+    public array $arrayFilterData;
+
+    /**
+     * @var bool status execution add()
+    */
+    public bool $statusAdd = false;
+
+    /**
+     * @param CheckCsv $checkCsv
+     * @param ReadCsv $readCsv
+     * @param Analyze $analyze
+     * @param AddDataToDb $addDataToDb
+    */
+    public function __construct(CheckCsv $checkCsv, ReadCsv $readCsv, Analyze $analyze, AddDataToDb $addDataToDb)
     {
         $this->checkCsv = $checkCsv;
         $this->readCsv = $readCsv;
@@ -35,26 +68,37 @@ class ImportCsv
     }
 
     /**
-     * main function
-     *
-     * @return
+     * @param string $pathFile
+     * @param string $argument
+     * @return array
     */
-    public function processImport()
+    public function processImport(string $pathFile, string $argument) :array
     {
-        $checkCsv = new CheckCsv();
-        $readCsv = new ReadCsv();
-        $analyse = new Analyze();
-        $addDataToDb = new AddDataToDb();
+        $this->pathFile = $pathFile;
+        $this->argument = $argument;
+        $validFormat = $this->checkCsv->checkFormat($this->pathFile);
 
-        $validFormat = $checkCsv->checkFormat($this->pathFile);
+        // можно создать свойство error и использовать ниже
+        if ($validFormat == 0) return ['no csv'];
+        $arrayData = $this->readCsv->deserializeFile($pathFile);
+        if (isset($arrayData['error'])) return ['error deserialize'];
+        $arrayFilterData = $this->analyze->checkCostAndStock($arrayData);
+        if (!empty($arrayFilterData['error'])) return ['error filter data'];
 
-        if($validFormat == 0) return 'no csv';
+        if ($argument !== 'test') {
+            $resultAddDb = $this->addDataToDb->add($arrayFilterData);
 
-        $arrayData = $readCsv->deserializeFile($this->pathFile);
-        $arrayFilterData = $analyse->checkCostAndStock($arrayData);
+            if ($resultAddDb == true) {
+                $this->statusAdd = true;
+                $arrayFilterData['status add'] = $this->statusAdd;
+            } else {
+                $arrayFilterData['status add'] = $this->statusAdd;
+            }
+        }
 
-        $res = $addDataToDb->add();
+        $arrayFilterData['status add'] = $this->statusAdd;
 
-        return print_r($res);
+        return $arrayFilterData;
     }
 }
+
