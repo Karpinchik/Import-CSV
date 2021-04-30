@@ -57,16 +57,21 @@ final class ImportCsvCommand extends Command
 
         $arrayFilterData = $this->process->processImport($pathFile, $argument);
 
-        if(empty($arrayFilterData['countRelevantItems'])) {
-            $io->error('not get data');
+        if (empty($arrayFilterData['countRelevantItems'])) {
+            $io->note('not get data');
 
             return 0;
         }
 
-        if($arrayFilterData['status add'] == true) {
+        if ($arrayFilterData['status add'] == 'data added') {
             $io->success('DB OK');
-        } else {
+        } else if ($arrayFilterData['status add'] == 'data not added') {
             $io->note('Data not added to DB');
+
+            return 1;
+        }
+        if ($arrayFilterData['status add'] == 'test mode') {
+            $io->note('Data not added to DB. Test mode');
         }
 
         $incr = $arrayFilterData['incorrectItems'];
@@ -84,7 +89,7 @@ final class ImportCsvCommand extends Command
         $table = new Table($output);
         $roles = [];
 
-        foreach ((array)$incr as $items=> $item){
+        foreach ((array)$incr as $items=> $item) {
             array_push($roles, $item);
         }
 

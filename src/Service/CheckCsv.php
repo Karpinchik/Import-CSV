@@ -17,7 +17,7 @@ class CheckCsv
     public function checkFormat(string $pathFile) :int
     {
         $ext = mb_strtolower(pathinfo($pathFile , PATHINFO_EXTENSION));
-        if(isset($ext) && $ext == 'csv') {
+        if (isset($ext) && $ext == 'csv') {
             return 1;
         } else {
             return 0;

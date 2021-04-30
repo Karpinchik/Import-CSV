@@ -5,7 +5,6 @@ namespace App\Service;
 
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\ProductRepository;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -28,7 +27,9 @@ class AddDataToDb
 //    */
 //    public object $product;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator
+//    ,Product $product
+    )
     {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
@@ -57,7 +58,11 @@ class AddDataToDb
                     $product->setProductDesc($value['Product Description']);
                     $product->setProductCode($value['Product Code']);
                     $product->setAdded(new \DateTime());
-                    $product->setDiscontinued(new \DateTime());
+
+                    if ($value['Discontinued'] === 'yes') {
+                        $product->setDiscontinued(new \DateTime());
+                    }
+
                     $product->setTimestampDate(new \DateTime());
                     $product->setStock(intval($value['Stock']));
                     $product->setCost(floatval($value['Cost in GBP']));
@@ -69,6 +74,7 @@ class AddDataToDb
 
                     $entityManager->persist($product);
                     $entityManager->flush();
+                    unset($product);
                 }
             }
 
@@ -79,6 +85,3 @@ class AddDataToDb
         }
     }
 }
-
-
-

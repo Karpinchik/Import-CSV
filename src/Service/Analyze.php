@@ -46,10 +46,10 @@ class Analyze
      */
     public function checkCostAndStock(array $arrayData) :array
     {
-        try{
-            foreach ($arrayData['All products'] as $key => $value){
+        try {
+            foreach ($arrayData['All products'] as $key => $value) {
                 // удалил все позиции без цифровых значений, чтобы дальше было удобнее фильтровать по условиям
-                if( is_numeric($value['Stock']) and is_numeric($value['Cost in GBP']) )
+                if ( is_numeric($value['Stock']) and is_numeric($value['Cost in GBP']) )
                 {
                     $resultToImport[$value['Product Code']] = $value;
                 }
@@ -58,22 +58,18 @@ class Analyze
                 }
             }
 
-    // надо переделать, выдает неверный результат, много ифов
             foreach ($resultToImport as $key => $value) {
-                if ($value['Cost in GBP'] >= 5){
-                    if ($value['Stock'] >= 10){
-                        if($value['Cost in GBP'] < 1000) {
-                            $relevantItems[$value['Product Code']] = $value;
-                        }
-                    }
+                if ((intval($value['Cost in GBP']) >= 5) and (intval($value['Stock']) >= 10)
+                    and (intval($value['Cost in GBP']) < 1000)) {
+                    $relevantItems[$value['Product Code']] = $value;
                 }
             }
 
             $this->countAllItems = $arrayData['count'];
             $this->relevantItems = $relevantItems;
             $this->incorrectItems = array_diff_key($resultToImport, $relevantItems);
-            $this->countIncorrectItems = count($this->incorrectItems);
-            $this->countRelevantItems = $this->countAllItems - count($this->incorrectItems);
+            $this->countRelevantItems = count($this->relevantItems);
+            $this->countIncorrectItems = $this->countAllItems - $this->countRelevantItems;
             $this->headers = $arrayData['header'];
 
             return (array)$this;
@@ -84,4 +80,3 @@ class Analyze
         }
     }
 }
-

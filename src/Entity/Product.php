@@ -103,7 +103,6 @@ class Product
 //        $this->cost = $cost;
 //    }
 
-
     public function getProductDataId(): ?int
     {
         return $this->productDataId;

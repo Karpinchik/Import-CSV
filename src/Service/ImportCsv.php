@@ -49,9 +49,9 @@ class ImportCsv
     public array $arrayFilterData;
 
     /**
-     * @var bool status execution add()
+     * @var string status execution add()
     */
-    public bool $statusAdd = false;
+    public string $statusAdd;
 
     /**
      * @param CheckCsv $checkCsv
@@ -89,16 +89,15 @@ class ImportCsv
             $resultAddDb = $this->addDataToDb->add($arrayFilterData);
 
             if ($resultAddDb == true) {
-                $this->statusAdd = true;
+                $this->statusAdd = 'data added';
                 $arrayFilterData['status add'] = $this->statusAdd;
             } else {
-                $arrayFilterData['status add'] = $this->statusAdd;
+                $arrayFilterData['status add'] = 'data not added';
             }
+        } else {
+            $arrayFilterData['status add'] = 'test mode';
         }
-
-        $arrayFilterData['status add'] = $this->statusAdd;
 
         return $arrayFilterData;
     }
 }
-

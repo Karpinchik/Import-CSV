@@ -19,7 +19,7 @@ class ReadCsv
     */
     public function deserializeFile(string $pathFile): array
     {
-        try{
+        try {
             $csv = Reader::createFromPath($pathFile, 'r');
             $csv->setHeaderOffset(0);
             $header = $csv->getHeader();
