@@ -12,15 +12,17 @@ class CheckCsv
      * Check format the file
      *
      * @param string $pathFile
-     * @return integer
+     * @return bool
      */
-    public function checkFormat(string $pathFile) :int
+    public function checkFormat(string $pathFile) :bool
     {
         $ext = mb_strtolower(pathinfo($pathFile , PATHINFO_EXTENSION));
         if (isset($ext) && $ext == 'csv') {
-            return 1;
+
+            return true;
         } else {
-            return 0;
+
+            return false;
         }
     }
 }

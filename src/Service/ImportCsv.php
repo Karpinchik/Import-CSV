@@ -6,37 +6,37 @@ namespace App\Service;
 /**
  * main container for services
 */
-class ImportCsv
+final class ImportCsv
 {
     /**
-     * @var object
+     * @var CheckCsv
     */
-    public object $checkCsv;
+    private CheckCsv $checkCsv;
 
     /**
-     * @var object
+     * @var ReadCsv
      */
-    public object $readCsv;
+    private ReadCsv $readCsv;
 
     /**
-     * @var object
+     * @var Analyze
      */
-    public object $analyze;
+    private Analyze $analyze;
 
     /**
-     * @var object
+     * @var AddDataToDb
      */
-    public object $addDataToDb;
+    private AddDataToDb $addDataToDb;
 
     /**
-     * @var string
+     * @var string path to file.csv
      */
     public string $pathFile;
 
     /**
-     * @var string
+     * @var bool test mode
      */
-    public string $argument;
+    public bool $argument;
 
     /**
      * @var array The array after deserialize
@@ -44,14 +44,9 @@ class ImportCsv
     public array $arrayData;
 
     /**
-     * @var array The array after filter
+     * @var object The array after filter
     */
-    public array $arrayFilterData;
-
-    /**
-     * @var string status execution add()
-    */
-    public string $statusAdd;
+    public object $objFilterData;
 
     /**
      * @param CheckCsv $checkCsv
@@ -69,35 +64,43 @@ class ImportCsv
 
     /**
      * @param string $pathFile
-     * @param string $argument
-     * @return array
+     * @param bool $argument
+     * @return object
     */
-    public function processImport(string $pathFile, string $argument) :array
+    public function processImport(string $pathFile, bool $argument) :object
     {
         $this->pathFile = $pathFile;
         $this->argument = $argument;
         $validFormat = $this->checkCsv->checkFormat($this->pathFile);
 
-        // можно создать свойство error и использовать ниже
-        if ($validFormat == 0) return ['no csv'];
-        $arrayData = $this->readCsv->deserializeFile($pathFile);
-        if (isset($arrayData['error'])) return ['error deserialize'];
-        $arrayFilterData = $this->analyze->checkCostAndStock($arrayData);
-        if (!empty($arrayFilterData['error'])) return ['error filter data'];
+        if ($validFormat == false) {
 
-        if ($argument !== 'test') {
-            $resultAddDb = $this->addDataToDb->add($arrayFilterData);
-
-            if ($resultAddDb == true) {
-                $this->statusAdd = 'data added';
-                $arrayFilterData['status add'] = $this->statusAdd;
-            } else {
-                $arrayFilterData['status add'] = 'data not added';
-            }
-        } else {
-            $arrayFilterData['status add'] = 'test mode';
+            return new ImportErrorsResult('file format does not match');
         }
 
-        return $arrayFilterData;
+        $arrayData = $this->readCsv->deserializeFile($pathFile);
+
+        if (isset($arrayData['error'])) {
+
+            return new ImportErrorsResult('could not read the file');
+        }
+
+        $this->objFilterData = $this->analyze->checkCostAndStock($arrayData);
+
+        if ($this->objFilterData instanceof ImportErrorsResult) {
+
+            return $this->objFilterData;
+        } else {
+            if ($argument == false) {
+                $resultAddDb = $this->addDataToDb->add($this->objFilterData);
+
+                if ($resultAddDb instanceof ImportErrorsResult) {
+
+                    return new ImportErrorsResult($resultAddDb->getErrors());
+                }
+            }
+        }
+
+        return $this->objFilterData;
     }
 }

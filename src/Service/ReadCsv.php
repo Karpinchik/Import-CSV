@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use League\Csv\Reader;
+
 /**
  * Deserialize csv in to array
 */
@@ -34,7 +35,7 @@ class ReadCsv
 
             return $this->arrayAllItems;
         } catch (\Exception $exception){
-            $this->arrayAllItems['error'] = 'error';
+            $this->arrayAllItems['error'] = $exception;
 
             return $this->arrayAllItems;
         }

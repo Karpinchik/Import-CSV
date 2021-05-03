@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Helper\Table;
+use App\Service\ImportErrorsResult;
 
 /**
  * Main command to import CSV
@@ -17,9 +18,9 @@ use Symfony\Component\Console\Helper\Table;
 final class ImportCsvCommand extends Command
 {
     /**
-     * @var object object for initializing main method application
+     * @var ImportCsv object for initializing main method application
      */
-    private object $process;
+    private ImportCsv $process;
 
     /**
      * @param ImportCsv $process
@@ -29,6 +30,11 @@ final class ImportCsvCommand extends Command
         parent::__construct();
         $this->process = $process;
     }
+
+    /**
+     * @var object
+    */
+    public object $objFilterData;
 
     /**
      * {@inheritDoc}
@@ -48,42 +54,36 @@ final class ImportCsvCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output) :int
     {
         $io = new SymfonyStyle($input, $output);
-        // здесь можно изменить аргументы проверки с str на bool
-        $argument = $input->getArgument('test') ?? 'no argument';
+        $argument = (bool)$input->getArgument('test');
 
         do {
             $pathFile = $io->ask('The path to CSV-file');
         } while ($pathFile === null);
 
-        $arrayFilterData = $this->process->processImport($pathFile, $argument);
+        $this->objFilterData = $this->process->processImport($pathFile, $argument);
 
-        if (empty($arrayFilterData['countRelevantItems'])) {
-            $io->note('not get data');
-
-            return 0;
-        }
-
-        if ($arrayFilterData['status add'] == 'data added') {
-            $io->success('DB OK');
-        } else if ($arrayFilterData['status add'] == 'data not added') {
-            $io->note('Data not added to DB');
-
+        if ($this->objFilterData instanceof ImportErrorsResult) {
+            $io->note($this->objFilterData->getErrors());
             return 1;
         }
-        if ($arrayFilterData['status add'] == 'test mode') {
-            $io->note('Data not added to DB. Test mode');
+
+        if($argument == true){
+            $io->note('Data not added. Test mode!');
+        }
+        else {
+            $io->success('Data added in to DB');
         }
 
-        $incr = $arrayFilterData['incorrectItems'];
-        $headers = $arrayFilterData['headers'];
-        $output->writeln(['All got products - ',]);
-        $output->writeln($arrayFilterData['countAllItems']);
+        $incr = $this->objFilterData->incorrectItems;
+        $headers = $this->objFilterData->headers;
+        $output->writeln(['All got products ',]);
+        $output->writeln($this->objFilterData->countAllItems);
         $output->writeln(['',]);
-        $output->writeln(['Relevant products - ',]);
-        $output->writeln($arrayFilterData['countRelevantItems']);
+        $output->writeln(['Relevant products ',]);
+        $output->writeln($this->objFilterData->countRelevantItems);
         $output->writeln(['',]);
-        $output->writeln(['All incorrect products - ',]);
-        $output->writeln($arrayFilterData['countIncorrectItems']);
+        $output->writeln(['All incorrect products ',]);
+        $output->writeln($this->objFilterData->countIncorrectItems);
         $output->writeln(['',]);
         $output->writeln(['Not import these items',]);
         $table = new Table($output);
@@ -102,5 +102,3 @@ final class ImportCsvCommand extends Command
         return 1;
     }
 }
-
-

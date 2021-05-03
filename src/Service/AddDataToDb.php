@@ -13,45 +13,34 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class AddDataToDb
 {
     /**
-     * @var object
+     * @var EntityManagerInterface
     */
-    public object $entityManager;
+    private EntityManagerInterface $entityManager;
+
+    /**
+     * @var ValidatorInterface
+    */
+    private ValidatorInterface $validator;
 
     /**
      * @var object
-    */
-    public object $validator;
+     */
+    public object $objFilterData;
 
-//    /**
-//     * @var object
-//    */
-//    public object $product;
-
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator
-//    ,Product $product
-    )
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
-//        $this->product = $product;
     }
 
-    public function add(array $arrayFilterData) :bool
+    public function add(object $objFilterData) :object
     {
-        try {
-            $entityManager = $this->entityManager;
+        $entityManager = $this->entityManager;
+        $this->objFilterData = $objFilterData;
 
-            if (isset($arrayFilterData) and !empty($arrayFilterData)) {
-                foreach ($arrayFilterData['relevantItems'] as $kay => $value) {
-                    //сомнительное решение. надо переделать
-//                    $product = new Product(
-//                        $value['Product Name'],
-//                        $value['Product Description'],
-//                        $value['Product Code'],
-//                        $value['Discontinued'],
-//                        $value['Stock'],
-//                        $value['Cost in GBP']
-//                    );
+        try {
+            if (isset($objFilterData) and !empty($objFilterData)) {
+                foreach ($this->objFilterData->relevantItems as $kay => $value) {
 
                     $product = new Product();
                     $product->setProductName($value['Product Name']);
@@ -66,10 +55,10 @@ class AddDataToDb
                     $product->setTimestampDate(new \DateTime());
                     $product->setStock(intval($value['Stock']));
                     $product->setCost(floatval($value['Cost in GBP']));
-
                     $errors = $this->validator->validate($product);
+
                     if (count($errors) > 0) {
-                        return false;
+                        return new ImportErrorsResult('данные не прошли валидацию при записи в БД');
                     }
 
                     $entityManager->persist($product);
@@ -78,10 +67,10 @@ class AddDataToDb
                 }
             }
 
-            return true;
-        } catch (\Exception $exception) {
+            return $this->objFilterData;
+        } catch (\Exception $exception){
 
-            return false;
+            return new ImportErrorsResult('data not add in to DB');
         }
     }
 }

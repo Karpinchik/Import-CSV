@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="Product", uniqueConstraints={@ORM\UniqueConstraint(name="ProductData_ProductCode_uindex", columns={"ProductCode"})})
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
  */
-class Product
+final class Product
 {
     /**
      * @var int
@@ -62,7 +62,7 @@ class Product
      *
      * @ORM\Column(name="TimestampDate", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    protected object $timestampDate;
+    protected \DateTime $timestampDate;
 
     /**
      * @var int

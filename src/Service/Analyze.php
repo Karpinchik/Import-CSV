@@ -6,77 +6,45 @@ namespace App\Service;
 class Analyze
 {
     /**
-     * @var array all relevant items in the array
-     */
-    public array $relevantItems;
-
-    /**
-     * @var array all incorrect items in the array
-     */
-    public array $incorrectItems;
-
-    /**
-     * @var int quantity all got items
-     */
-    public int $countAllItems;
-
-    /**
-     * @var array headers
-     */
-    public array $headers;
-
-    /**
-     * @var int quantity relevant items
-     */
-    public int $countRelevantItems;
-
-    /**
-     * @var int
+     * @var ImportResult object with result data
     */
-    public int $countIncorrectItems;
-
-    /**
-     * @var string
-    */
-    public string $error;
+    public ImportResult $importResult;
 
     /**
      * @param array $arrayData
-     * @return array
+     * @return object
      */
-    public function checkCostAndStock(array $arrayData) :array
+    public function checkCostAndStock(array $arrayData) :object
     {
+        $this->importResult = new ImportResult();
         try {
             foreach ($arrayData['All products'] as $key => $value) {
-                // удалил все позиции без цифровых значений, чтобы дальше было удобнее фильтровать по условиям
-                if ( is_numeric($value['Stock']) and is_numeric($value['Cost in GBP']) )
+                if ( is_numeric($value['Stock']) && is_numeric($value['Cost in GBP']) )
                 {
                     $resultToImport[$value['Product Code']] = $value;
                 }
                 else {
-                    $this->incorrectItems[$value['Product Code']] = $value;
+                    $this->importResult->incorrectItems[$value['Product Code']] = $value;
                 }
             }
 
             foreach ($resultToImport as $key => $value) {
-                if ((intval($value['Cost in GBP']) >= 5) and (intval($value['Stock']) >= 10)
-                    and (intval($value['Cost in GBP']) < 1000)) {
-                    $relevantItems[$value['Product Code']] = $value;
+                if ((intval($value['Cost in GBP']) >= 5) && (intval($value['Stock']) >= 10)
+                    && (intval($value['Cost in GBP']) < 1000)) {
+                    $this->importResult->relevantItems[$value['Product Code']] = $value;
                 }
             }
 
-            $this->countAllItems = $arrayData['count'];
-            $this->relevantItems = $relevantItems;
-            $this->incorrectItems = array_diff_key($resultToImport, $relevantItems);
-            $this->countRelevantItems = count($this->relevantItems);
-            $this->countIncorrectItems = $this->countAllItems - $this->countRelevantItems;
-            $this->headers = $arrayData['header'];
+            $this->importResult->countAllItems = $arrayData['count'];
+            $this->importResult->incorrectItems = array_diff_key($resultToImport, $this->importResult->relevantItems);
+            $this->importResult->countRelevantItems = count($this->importResult->relevantItems);
+            $this->importResult->countIncorrectItems = $this->importResult->countAllItems - $this->importResult->countRelevantItems;
+            $this->importResult->headers = $arrayData['header'];
 
-            return (array)$this;
+            return $this->importResult;
         } catch (\Exception $exception){
-            $this->error = 'error';
 
-            return (array)$this;
+            return new ImportErrorsResult('не удалось сформировать массив для записис в БД');
         }
     }
 }
