@@ -74,30 +74,32 @@ final class ImportCsv
         $validFormat = $this->checkCsv->checkFormat($this->pathFile);
 
         if ($validFormat == false) {
-
-            return new ImportErrorsResult('file format does not match');
+            $err = new ImportErrorsResult('Notice! File format does not match'.PHP_EOL);
+            die($err->getErrors());
         }
 
-        $arrayData = $this->readCsv->deserializeFile($pathFile);
+        try {
+            $arrayData = $this->readCsv->deserializeFile($pathFile);
+        } catch (\Exception $exception) {
+            $err = new ImportErrorsResult($exception->getMessage());
+            die($err->getErrors());
+        }
 
-        if (isset($arrayData['error'])) {
-
-            return new ImportErrorsResult('could not read the file');
+        if ($arrayData['count'] == 0) {
+            $err =  new ImportErrorsResult('Notice! File not read'.PHP_EOL);
+            die($err->getErrors());
         }
 
         $this->objFilterData = $this->analyze->checkCostAndStock($arrayData);
-
         if ($this->objFilterData instanceof ImportErrorsResult) {
+           die($this->objFilterData->getErrors());
+        }
 
-            return $this->objFilterData;
-        } else {
-            if ($argument == false) {
-                $resultAddDb = $this->addDataToDb->add($this->objFilterData);
+        if ($argument == false) {
+            $resultAddDb = $this->addDataToDb->add($this->objFilterData);
 
-                if ($resultAddDb instanceof ImportErrorsResult) {
-
-                    return new ImportErrorsResult($resultAddDb->getErrors());
-                }
+            if ($resultAddDb instanceof ImportErrorsResult) {
+                die($resultAddDb->getErrors());
             }
         }
 

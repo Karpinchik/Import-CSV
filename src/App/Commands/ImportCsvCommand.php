@@ -62,10 +62,10 @@ final class ImportCsvCommand extends Command
 
         $this->objFilterData = $this->process->processImport($pathFile, $argument);
 
-        if ($this->objFilterData instanceof ImportErrorsResult) {
-            $io->note($this->objFilterData->getErrors());
-            return 1;
-        }
+//        if ($this->objFilterData instanceof ImportErrorsResult) {
+//            $io->note($this->objFilterData->getErrors());
+//            return 1;
+//        }
 
         if($argument == true){
             $io->note('Data not added. Test mode!');

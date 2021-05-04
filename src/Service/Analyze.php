@@ -12,11 +12,12 @@ class Analyze
 
     /**
      * @param array $arrayData
-     * @return object
+     * @return ImportResult
      */
     public function checkCostAndStock(array $arrayData) :object
     {
         $this->importResult = new ImportResult();
+
         try {
             foreach ($arrayData['All products'] as $key => $value) {
                 if ( is_numeric($value['Stock']) && is_numeric($value['Cost in GBP']) )
@@ -24,6 +25,7 @@ class Analyze
                     $resultToImport[$value['Product Code']] = $value;
                 }
                 else {
+                    $this->importResult = new ImportResult();
                     $this->importResult->incorrectItems[$value['Product Code']] = $value;
                 }
             }
@@ -44,7 +46,7 @@ class Analyze
             return $this->importResult;
         } catch (\Exception $exception){
 
-            return new ImportErrorsResult('не удалось сформировать массив для записис в БД');
+            return new ImportErrorsResult('Notice! not create object for writing in to Db or not analyzed input data'.PHP_EOL);
         }
     }
 }

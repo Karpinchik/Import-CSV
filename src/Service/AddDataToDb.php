@@ -58,7 +58,7 @@ class AddDataToDb
                     $errors = $this->validator->validate($product);
 
                     if (count($errors) > 0) {
-                        return new ImportErrorsResult('данные не прошли валидацию при записи в БД');
+                        return new ImportErrorsResult('Notice! data not valid'.PHP_EOL);
                     }
 
                     $entityManager->persist($product);
@@ -70,7 +70,7 @@ class AddDataToDb
             return $this->objFilterData;
         } catch (\Exception $exception){
 
-            return new ImportErrorsResult('data not add in to DB');
+            return new ImportErrorsResult('Notice! Data not add in to DB'.PHP_EOL);
         }
     }
 }

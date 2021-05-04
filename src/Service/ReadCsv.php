@@ -14,9 +14,12 @@ class ReadCsv
      * @var array
     */
     private array $arrayAllItems;
+
     /**
      * @param string $pathFile
      * @return array
+     *
+     * @throws \Exception
     */
     public function deserializeFile(string $pathFile): array
     {
@@ -35,9 +38,7 @@ class ReadCsv
 
             return $this->arrayAllItems;
         } catch (\Exception $exception){
-            $this->arrayAllItems['error'] = $exception;
-
-            return $this->arrayAllItems;
+            throw new \Exception('Notice! Not read file'.PHP_EOL);
         }
     }
 }
