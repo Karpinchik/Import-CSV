@@ -19,9 +19,9 @@ class ImportErrorsResult
 
     public function hasErrors() :bool
     {
-        if(count($this->errors) > 0) {
+        if (count($this->errors) > 0) {
             return true;
-        }
+        } else return false;
     }
 
     public function addError($message)

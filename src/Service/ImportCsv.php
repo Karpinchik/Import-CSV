@@ -11,22 +11,22 @@ final class ImportCsv
     /**
      * @var CheckCsv
     */
-    private CheckCsv $checkCsv;
+    public CheckCsv $checkCsv;
 
     /**
      * @var ReadCsv
      */
-    private ReadCsv $readCsv;
+    public ReadCsv $readCsv;
 
     /**
      * @var Analyze
      */
-    private Analyze $analyze;
+    public Analyze $analyze;
 
     /**
      * @var AddDataToDb
      */
-    private AddDataToDb $addDataToDb;
+    public AddDataToDb $addDataToDb;
 
     /**
      * @var string path to file.csv
@@ -39,9 +39,9 @@ final class ImportCsv
     public bool $argument;
 
     /**
-     * @var array The array after deserialize
+     * @var AllItemsBeforeRead The object after deserialize
     */
-    public array $arrayData;
+    public AllItemsBeforeRead $getReadData;
 
     /**
      * @var object The array after filter
@@ -79,25 +79,24 @@ final class ImportCsv
         }
 
         try {
-            $arrayData = $this->readCsv->deserializeFile($pathFile);
+            $this->getReadData = $this->readCsv->deserializeFile($pathFile);
         } catch (\Exception $exception) {
             $err = new ImportErrorsResult($exception->getMessage());
             die($err->getErrors());
         }
 
-        if ($arrayData['count'] == 0) {
+        if ($this->getReadData->count == 0) {
             $err =  new ImportErrorsResult('Notice! File not read'.PHP_EOL);
             die($err->getErrors());
         }
 
-        $this->objFilterData = $this->analyze->checkCostAndStock($arrayData);
+        $this->objFilterData = $this->analyze->checkCostAndStock($this->getReadData);
         if ($this->objFilterData instanceof ImportErrorsResult) {
-           die($this->objFilterData->getErrors());
+            die($this->objFilterData->getErrors());
         }
 
         if ($argument == false) {
             $resultAddDb = $this->addDataToDb->add($this->objFilterData);
-
             if ($resultAddDb instanceof ImportErrorsResult) {
                 die($resultAddDb->getErrors());
             }
