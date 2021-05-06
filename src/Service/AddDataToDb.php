@@ -15,12 +15,12 @@ class AddDataToDb
     /**
      * @var EntityManagerInterface
     */
-    private EntityManagerInterface $entityManager;
+    public EntityManagerInterface $entityManager;
 
     /**
      * @var ValidatorInterface
     */
-    private ValidatorInterface $validator;
+    public ValidatorInterface $validator;
 
     /**
      * @var object
@@ -41,20 +41,19 @@ class AddDataToDb
         try {
             if (isset($objFilterData) and !empty($objFilterData)) {
                 foreach ($this->objFilterData->relevantItems as $kay => $value) {
-
                     $product = new Product();
-                    $product->setProductName($value['Product Name']);
-                    $product->setProductDesc($value['Product Description']);
-                    $product->setProductCode($value['Product Code']);
+                    $product->setProductName($value->productName);
+                    $product->setProductDesc($value->productDescription);
+                    $product->setProductCode($value->productCode);
                     $product->setAdded(new \DateTime());
 
-                    if ($value['Discontinued'] === 'yes') {
+                    if ($value->discontinued === 'yes') {
                         $product->setDiscontinued(new \DateTime());
                     }
 
                     $product->setTimestampDate(new \DateTime());
-                    $product->setStock(intval($value['Stock']));
-                    $product->setCost(floatval($value['Cost in GBP']));
+                    $product->setStock(intval($value->stock));
+                    $product->setCost(floatval($value->costInGBP));
                     $errors = $this->validator->validate($product);
 
                     if (count($errors) > 0) {

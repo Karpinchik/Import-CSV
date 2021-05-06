@@ -10,7 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Helper\Table;
-use App\Service\ImportErrorsResult;
 
 /**
  * Main command to import CSV
@@ -62,11 +61,6 @@ final class ImportCsvCommand extends Command
 
         $this->objFilterData = $this->process->processImport($pathFile, $argument);
 
-//        if ($this->objFilterData instanceof ImportErrorsResult) {
-//            $io->note($this->objFilterData->getErrors());
-//            return 1;
-//        }
-
         if($argument == true){
             $io->note('Data not added. Test mode!');
         }
@@ -75,7 +69,7 @@ final class ImportCsvCommand extends Command
         }
 
         $incr = $this->objFilterData->incorrectItems;
-        $headers = $this->objFilterData->headers;
+        $headers = (array)$this->objFilterData->headers;
         $output->writeln(['All got products ',]);
         $output->writeln($this->objFilterData->countAllItems);
         $output->writeln(['',]);
@@ -89,12 +83,12 @@ final class ImportCsvCommand extends Command
         $table = new Table($output);
         $roles = [];
 
-        foreach ((array)$incr as $items=> $item) {
-            array_push($roles, $item);
+        foreach ((array)$incr as $items => $item) {
+            array_push($roles, (array)$item);
         }
 
         $table
-            ->setHeaders([$headers])
+            ->setHeaders($headers)
             ->setRows($roles)
         ;
         $table->render();
