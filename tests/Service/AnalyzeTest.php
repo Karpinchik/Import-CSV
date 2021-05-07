@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
-use App\Service\Analyze;
-use App\Service\ImportResult;
+use App\DTO\Analyze;
+use App\DTO\ImportResult;
 use PHPUnit\Framework\TestCase;
 
 class AnalyzeTest extends TestCase

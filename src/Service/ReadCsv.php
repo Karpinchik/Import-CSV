@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\DTO\ItemProduct;
+use App\ImportData\AllItemsAfterRead;
 use League\Csv\Reader;
 
 /**
@@ -14,50 +16,34 @@ use League\Csv\Reader;
 class ReadCsv
 {
     /**
-     * @var AllItemsBeforeRead object
-     */
-    protected AllItemsBeforeRead $allItems;
-
-    /**
-     * @var array
+     * @var array временный массив с продуктами для добавления их в конструктор
      */
     public array $arrayAllItems;
 
     /**
-     * @var ItemProduct
-     */
-    public ItemProduct $itemProduct;
-
-    /**
      * @param string $pathFile
-     * @return AllItemsBeforeRead
+     * @return AllItemsAfterRead
      *
      * @throws \Exception
      */
-    public function deserializeFile(string $pathFile): AllItemsBeforeRead
+    public function deserializeFile(string $pathFile): AllItemsAfterRead
     {
-        try {
-            $this->allItems = new AllItemsBeforeRead();
-            $csv = Reader::createFromPath($pathFile, 'r');
-            $csv->setHeaderOffset(0);
-            $this->allItems->header = $csv->getHeader();
-            $records = $csv->getRecords();
-            $this->allItems->count = $csv->count();
+        $csv = Reader::createFromPath($pathFile, 'r');
+        $csv->setHeaderOffset(0);
+        $records = $csv->getRecords();
 
-            foreach ($records as $key => $record) {
-                $this->itemProduct = new ItemProduct();
-                $this->itemProduct->productCode = $record['Product Code'];
-                $this->itemProduct->productName = $record['Product Name'];
-                $this->itemProduct->productDescription = $record['Product Description'];
-                $this->itemProduct->stock = intval($record['Stock']);
-                $this->itemProduct->costInGBP = floatval($record['Cost in GBP']);
-                $this->itemProduct->discontinued = strval($record['Discontinued']);
-                $this->allItems->allProducts[$record['Product Code']] = $this->itemProduct;
-            }
-
-            return $this->allItems;
-        } catch (\Exception $exception){
-            throw new \Exception('Notice! Not read file'.PHP_EOL);
+        foreach ($records as $key => $record) {
+            $itemProduct = new ItemProduct(
+                $record['Product Code'],
+                $record['Product Name'],
+                $record['Product Description'],
+                intval($record['Stock']),
+                floatval($record['Cost in GBP']),
+                strval($record['Discontinued']));
+                $this->arrayAllItems[$record['Product Code']] = $itemProduct;
+                unset($itemProduct);
         }
+
+        return new AllItemsAfterRead($csv->getHeader(), $csv->count(), $this->arrayAllItems);
     }
 }

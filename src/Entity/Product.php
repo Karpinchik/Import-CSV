@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,6 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="Product", uniqueConstraints={@ORM\UniqueConstraint(name="ProductData_ProductCode_uindex", columns={"ProductCode"})})
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
+ *
+ * @UniqueEntity("productCode")
  */
 final class Product
 {
@@ -39,7 +42,7 @@ final class Product
     /**
      * @var string
      *
-     * @ORM\Column(name="ProductCode", type="string", length=10, nullable=false)
+     * @ORM\Column(name="ProductCode", type="string", length=10, nullable=false, unique=true)
      */
     protected string $productCode;
 
@@ -78,30 +81,26 @@ final class Product
      */
     protected float $cost;
 
-//    /**
-//     * Product constructor.
-////     * @param int $productDataId
-//     * @param string $productName
-//     * @param string $productDesc
-//     * @param string $productCode
-////     * @param \DateTime|object|null $added
-//     * @param \DateTime|object|null $discontinued
-////     * @param \DateTime|object $timestampDate
-//     * @param int $stock
-//     * @param float $cost
-//     */
-//    public function __construct( string $productName, string $productDesc, string $productCode, $discontinued, int $stock, float $cost)
-//    {
-////        $this->productDataId = $productDataId;
-//        $this->productName = $productName;
-//        $this->productDesc = $productDesc;
-//        $this->productCode = $productCode;
-//        $this->added = new \DateTime();
-//        $this->discontinued = $discontinued;
-//        $this->timestampDate = new \DateTime();
-//        $this->stock = $stock;
-//        $this->cost = $cost;
-//    }
+    /**
+     * Product constructor.
+     * @param string $productName
+     * @param string $productDesc
+     * @param string $productCode
+     * @param \DateTime|object|null $discontinued
+     * @param int $stock
+     * @param float $cost
+     */
+    public function __construct( string $productName, string $productDesc, string $productCode, $discontinued, int $stock, float $cost)
+    {
+        $this->productName = $productName;
+        $this->productDesc = $productDesc;
+        $this->productCode = $productCode;
+        $this->added = new \DateTime();
+        $this->discontinued = $discontinued;
+        $this->timestampDate = new \DateTime();
+        $this->stock = $stock;
+        $this->cost = $cost;
+    }
 
     public function getProductDataId(): ?int
     {
@@ -203,7 +202,4 @@ final class Product
 
         return $this;
     }
-
-
-
 }

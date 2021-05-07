@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
-use App\Service\CheckCsv;
+use App\DTO\CheckCsv;
 use PHPUnit\Framework\TestCase;
 
 class CheckCsvTest extends TestCase

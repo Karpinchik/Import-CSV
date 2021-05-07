@@ -2,51 +2,47 @@
 declare(strict_types=1);
 
 namespace App\Service;
+
+use App\ImportData\AllItemsAfterRead;
+use App\ImportData\ImportResult;
 use Symfony\Component\Validator\Validation;
 
 class Analyze
 {
     /**
-     * @var ImportResult object with result data
-     */
-    public ImportResult $importResult;
-
-    /**
-     * @var AllItemsBeforeRead
-     */
-    public AllItemsBeforeRead $getReadData;
-
-    /**
-     * @param AllItemsBeforeRead $getReadData
+     * @param AllItemsAfterRead $getReadData
      * @return ImportResult
      */
-    public function checkCostAndStock(AllItemsBeforeRead $getReadData) :object
+    public function checkCostAndStock(AllItemsAfterRead $getReadData) :ImportResult
     {
-        $this->importResult = new ImportResult();
-        $this->getReadData = $getReadData;
+        $relevantItems = [];
+        $incorrectItems = [];
+
         $validator = Validation::createValidatorBuilder()
             ->enableAnnotationMapping()
             ->getValidator();
 
-        try {
-            foreach ($this->getReadData->allProducts as $value) {
-                $error = $validator->validate($value);
-                if (count($error) >= 1) {
-                    $this->importResult->incorrectItems[$value->productCode] = $value;
-                } else if (count($error) == 0) {
-                    $this->importResult->relevantItems[$value->productCode] = $value;
-                }
+        foreach ($getReadData->allProducts as $value) {
+            $error = $validator->validate($value);
+            if (count($error) >= 1) {
+                $incorrectItems[] = $value;
+            } else if (count($error) == 0) {
+                $relevantItems[] = $value;
             }
-
-            $this->importResult->countAllItems = $this->getReadData->count;
-            $this->importResult->countRelevantItems = count($this->importResult->relevantItems);
-            $this->importResult->countIncorrectItems = $this->importResult->countAllItems - $this->importResult->countRelevantItems;
-            $this->importResult->headers = $this->getReadData->header;
-
-            return $this->importResult;
-        } catch (\Exception $exception){
-
-            return new ImportErrorsResult('Notice! not create object for writing in to Db or not analyzed input data'.PHP_EOL);
         }
+
+        $countRelevant = count($relevantItems);
+        $countIncorrect = $getReadData->count - count($relevantItems);
+
+        $importResult = new ImportResult(
+            $relevantItems,
+            $incorrectItems,
+            $getReadData->count,
+            $getReadData->header,
+            $countRelevant,
+            $countIncorrect
+        );
+
+        return $importResult;
     }
 }

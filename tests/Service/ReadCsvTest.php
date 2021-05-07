@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Tests\Service;
 
 use PHPUnit\Framework\TestCase;
-use App\Service\ReadCsv;
+use App\DTO\ReadCsv;
 
 class ReadCsvTest extends TestCase
 {

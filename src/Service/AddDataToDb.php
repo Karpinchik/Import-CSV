@@ -6,6 +6,7 @@ namespace App\Service;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\ImportData\ImportResult;
 
 /**
  * Class to adding data in DB
@@ -22,54 +23,45 @@ class AddDataToDb
     */
     public ValidatorInterface $validator;
 
-    /**
-     * @var object
-     */
-    public object $objFilterData;
-
     public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
     }
 
-    public function add(object $objFilterData) :object
+    public function add(ImportResult $objFilterData) :ImportResult
     {
         $entityManager = $this->entityManager;
-        $this->objFilterData = $objFilterData;
 
         try {
             if (isset($objFilterData) and !empty($objFilterData)) {
-                foreach ($this->objFilterData->relevantItems as $kay => $value) {
-                    $product = new Product();
-                    $product->setProductName($value->productName);
-                    $product->setProductDesc($value->productDescription);
-                    $product->setProductCode($value->productCode);
-                    $product->setAdded(new \DateTime());
+                foreach ($objFilterData->getRelevantItems() as $kay => $value) {
 
-                    if ($value->discontinued === 'yes') {
-                        $product->setDiscontinued(new \DateTime());
+                    if ($value->getDiscontinued() === 'yes') {
+                        $dataTimeDiscontinued = new \DateTime();
+                    } else {
+                        $dataTimeDiscontinued = null;
                     }
 
-                    $product->setTimestampDate(new \DateTime());
-                    $product->setStock(intval($value->stock));
-                    $product->setCost(floatval($value->costInGBP));
-                    $errors = $this->validator->validate($product);
+                    $product = new Product(
+                        $value->getProductName(),
+                        $value->getProductDescription(),
+                        $value->getProductCode(),
+                        $dataTimeDiscontinued,
+                        $value->getStock(),
+                        $value->getCostInGBP()
+                    );
 
-                    if (count($errors) > 0) {
-                        return new ImportErrorsResult('Notice! data not valid'.PHP_EOL);
-                    }
-
+                    // если попадаеться дублирующая запись, то получаем ошибку и дальнейшие записи в базу не происходят
                     $entityManager->persist($product);
                     $entityManager->flush();
                     unset($product);
                 }
             }
-
-            return $this->objFilterData;
-        } catch (\Exception $exception){
-
-            return new ImportErrorsResult('Notice! Data not add in to DB'.PHP_EOL);
+        } catch (\Exception $exception) {
+            die("Get duplicate products. Not added items in to DB.".PHP_EOL);
         }
+
+        return $objFilterData;
     }
 }

@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\ImportData\ImportErrorsResult;
+use App\ImportData\ImportResult;
+
 /**
  * main container for services
 */
@@ -11,42 +14,27 @@ final class ImportCsv
     /**
      * @var CheckCsv
     */
-    public CheckCsv $checkCsv;
+    private CheckCsv $checkCsv;
 
     /**
      * @var ReadCsv
      */
-    public ReadCsv $readCsv;
+    private ReadCsv $readCsv;
 
     /**
      * @var Analyze
      */
-    public Analyze $analyze;
+    private Analyze $analyze;
 
     /**
      * @var AddDataToDb
      */
-    public AddDataToDb $addDataToDb;
+    private AddDataToDb $addDataToDb;
 
     /**
-     * @var string path to file.csv
-     */
-    public string $pathFile;
-
-    /**
-     * @var bool test mode
-     */
-    public bool $argument;
-
-    /**
-     * @var AllItemsBeforeRead The object after deserialize
+     * @var ImportResult The array after filter
     */
-    public AllItemsBeforeRead $getReadData;
-
-    /**
-     * @var object The array after filter
-    */
-    public object $objFilterData;
+    public ImportResult $objFilterData;
 
     /**
      * @param CheckCsv $checkCsv
@@ -65,13 +53,11 @@ final class ImportCsv
     /**
      * @param string $pathFile
      * @param bool $argument
-     * @return object
+     * @return ImportResult
     */
-    public function processImport(string $pathFile, bool $argument) :object
+    public function processImport(string $pathFile, bool $argument) :ImportResult
     {
-        $this->pathFile = $pathFile;
-        $this->argument = $argument;
-        $validFormat = $this->checkCsv->checkFormat($this->pathFile);
+        $validFormat = $this->checkCsv->checkFormat($pathFile);
 
         if ($validFormat == false) {
             $err = new ImportErrorsResult('Notice! File format does not match'.PHP_EOL);
@@ -79,27 +65,24 @@ final class ImportCsv
         }
 
         try {
-            $this->getReadData = $this->readCsv->deserializeFile($pathFile);
+            $getReadData = $this->readCsv->deserializeFile($pathFile);
         } catch (\Exception $exception) {
-            $err = new ImportErrorsResult($exception->getMessage());
-            die($err->getErrors());
+            die($exception->getMessage().PHP_EOL);
         }
 
-        if ($this->getReadData->count == 0) {
+        if ($getReadData->count == 0) {
             $err =  new ImportErrorsResult('Notice! File not read'.PHP_EOL);
             die($err->getErrors());
         }
 
-        $this->objFilterData = $this->analyze->checkCostAndStock($this->getReadData);
-        if ($this->objFilterData instanceof ImportErrorsResult) {
-            die($this->objFilterData->getErrors());
+        try {
+            $this->objFilterData = $this->analyze->checkCostAndStock($getReadData);
+        } catch (\Exception $exception) {
+            die($exception->getMessage().PHP_EOL);
         }
 
         if ($argument == false) {
-            $resultAddDb = $this->addDataToDb->add($this->objFilterData);
-            if ($resultAddDb instanceof ImportErrorsResult) {
-                die($resultAddDb->getErrors());
-            }
+            $this->addDataToDb->add($this->objFilterData);
         }
 
         return $this->objFilterData;

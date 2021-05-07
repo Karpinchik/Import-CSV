@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace App\Tests\Service;
 
 use PHPUnit\Framework\TestCase;
-use App\Service\ImportCsv;
-use App\Service\Analyze;
-use App\Service\ReadCsv;
-use App\Service\CheckCsv;
-use App\Service\AddDataToDb;
+use App\DTO\ImportCsv;
+use App\DTO\Analyze;
+use App\DTO\ReadCsv;
+use App\DTO\CheckCsv;
+use App\DTO\AddDataToDb;
 
 class ImportCsvTest extends TestCase
 {
