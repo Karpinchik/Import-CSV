@@ -72,7 +72,7 @@ final class ImportCsv
             die($exception->getMessage().PHP_EOL);
         }
 
-        if ($getReadData->count == 0) {
+        if ($getReadData->getCount() == 0) {
             $err =  new ImportErrorsResult('Notice! File not read'.PHP_EOL);
             die($err->getErrors());
         }

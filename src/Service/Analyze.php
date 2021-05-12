@@ -30,7 +30,7 @@ class Analyze
             ->enableAnnotationMapping()
             ->getValidator();
 
-        foreach ($getReadData->allProducts as $value) {
+        foreach ($getReadData->getAllProducts() as $value) {
             $error = $validator->validate($value);
             if (count($error) >= 1) {
                 $incorrectItems[] = $value;
@@ -40,13 +40,13 @@ class Analyze
         }
 
         $countRelevant = count($relevantItems);
-        $countIncorrect = $getReadData->count - count($relevantItems);
+        $countIncorrect = $getReadData->getCount() - count($relevantItems);
 
         $importResult = new ImportResult(
             $relevantItems,
             $incorrectItems,
-            $getReadData->count,
-            $getReadData->header,
+            $getReadData->getCount(),
+            $getReadData->getHeader(),
             $countRelevant,
             $countIncorrect
         );

@@ -12,17 +12,17 @@ class AllItemsAfterRead
     /**
      * @var array
      */
-    public array $header;
+    private array $header;
 
     /**
      * @var int
      */
-    public int $count;
+    private int $count;
 
     /**
      * @var array
      */
-    public array $allProducts;
+    private array $allProducts;
 
     /**
      * AllItemsAfterRead constructor.
@@ -33,6 +33,54 @@ class AllItemsAfterRead
     public function __construct($header, $count, $allProducts) {
         $this->header = $header;
         $this->count = $count;
+        $this->allProducts = $allProducts;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeader(): array
+    {
+        return $this->header;
+    }
+
+    /**
+     * @param array $header
+     */
+    public function setHeader(array $header): void
+    {
+        $this->header = $header;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCount(): int
+    {
+        return $this->count;
+    }
+
+    /**
+     * @param int $count
+     */
+    public function setCount(int $count): void
+    {
+        $this->count = $count;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllProducts(): array
+    {
+        return $this->allProducts;
+    }
+
+    /**
+     * @param array $allProducts
+     */
+    public function setAllProducts(array $allProducts): void
+    {
         $this->allProducts = $allProducts;
     }
 }
