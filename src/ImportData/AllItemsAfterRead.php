@@ -24,6 +24,12 @@ class AllItemsAfterRead
      */
     public array $allProducts;
 
+    /**
+     * AllItemsAfterRead constructor.
+     * @param $header
+     * @param $count
+     * @param $allProducts
+     */
     public function __construct($header, $count, $allProducts) {
         $this->header = $header;
         $this->count = $count;

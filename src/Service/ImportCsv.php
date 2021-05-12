@@ -12,22 +12,22 @@ use App\ImportData\ImportResult;
 final class ImportCsv
 {
     /**
-     * @var CheckCsv
+     * @var CheckCsv To check format the input file. The should be - .csv
     */
     private CheckCsv $checkCsv;
 
     /**
-     * @var ReadCsv
+     * @var ReadCsv Deserialize csv in to object
      */
     private ReadCsv $readCsv;
 
     /**
-     * @var Analyze
+     * @var Analyze Analyze, validate, filter object AllItemsAfterRead and return ImportResult
      */
     private Analyze $analyze;
 
     /**
-     * @var AddDataToDb
+     * @var AddDataToDb Add data in to DB
      */
     private AddDataToDb $addDataToDb;
 
@@ -51,6 +51,8 @@ final class ImportCsv
     }
 
     /**
+     * Main process. Use services - CheckCsv, ReadCsv, Analyze, AddDataToDb
+     *
      * @param string $pathFile
      * @param bool $argument
      * @return ImportResult
@@ -60,7 +62,7 @@ final class ImportCsv
         $validFormat = $this->checkCsv->checkFormat($pathFile);
 
         if ($validFormat == false) {
-            $err = new ImportErrorsResult('Notice! File format does not match'.PHP_EOL);
+            $err = new ImportErrorsResult('Notice! File format does not use'.PHP_EOL);
             die($err->getErrors());
         }
 

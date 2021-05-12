@@ -69,7 +69,7 @@ final class ImportCsvCommand extends Command
             $io->success('Data added in to DB');
         }
 
-        $incr = $this->objFilterData->getIncorrectItems();
+        $allIncorrectItems = $this->objFilterData->getIncorrectItems();
         $headers = (array)$this->objFilterData->getHeaders();
         $output->writeln(['All got products ',]);
         $output->writeln($this->objFilterData->getCountAllItems());
@@ -84,8 +84,8 @@ final class ImportCsvCommand extends Command
         $table = new Table($output);
         $roles = [];
 
-        if ($incr) {
-            foreach ((array)$incr as $items => $item) {
+        if ($allIncorrectItems) {
+            foreach ((array)$allIncorrectItems as $items => $item) {
                 array_push($roles, (array)$item);
             }
 

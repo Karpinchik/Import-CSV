@@ -131,6 +131,15 @@ class ImportResult
         $this->countIncorrectItems = $countIncorrectItems;
     }
 
+    /**
+     * ImportResult constructor.
+     * @param $relevantItems
+     * @param $incorrectItems
+     * @param $countAllItems
+     * @param $headers
+     * @param $countRelevantItems
+     * @param $countIncorrectItems
+     */
     public function __construct($relevantItems, $incorrectItems, $countAllItems, $headers, $countRelevantItems, $countIncorrectItems) {
         $this->relevantItems = $relevantItems;
         $this->incorrectItems = $incorrectItems;

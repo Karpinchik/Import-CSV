@@ -16,11 +16,13 @@ use League\Csv\Reader;
 class ReadCsv
 {
     /**
-     * @var array временный массив с продуктами для добавления их в конструктор
+     * @var array a temporary array with products to add to the constructor
      */
     public array $arrayAllItems;
 
     /**
+     * Deserialize csv in to object
+     *
      * @param string $pathFile
      * @return AllItemsAfterRead
      *

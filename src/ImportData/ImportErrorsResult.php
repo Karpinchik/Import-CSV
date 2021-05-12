@@ -5,8 +5,15 @@ namespace App\ImportData;
 
 class ImportErrorsResult
 {
+    /**
+     * @var array
+     */
     private array $errors = [];
 
+    /**
+     * ImportErrorsResult constructor.
+     * @param $message
+     */
     public function __construct($message)
     {
         $this->errors[] = $message;

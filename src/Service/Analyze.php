@@ -7,9 +7,17 @@ use App\ImportData\AllItemsAfterRead;
 use App\ImportData\ImportResult;
 use Symfony\Component\Validator\Validation;
 
+/**
+ * Analyze, validate, filter object AllItemsAfterRead and return ImportResult
+ *
+ * Class Analyze
+ * @package App\Service
+ */
 class Analyze
 {
     /**
+     * Analyze, validate, filter object AllItemsAfterRead and return ImportResult
+     *
      * @param AllItemsAfterRead $getReadData
      * @return ImportResult
      */

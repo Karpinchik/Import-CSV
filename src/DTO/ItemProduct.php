@@ -44,6 +44,15 @@ class ItemProduct
      */
     private string $discontinued;
 
+    /**
+     * ItemProduct constructor.
+     * @param $productCode
+     * @param $productName
+     * @param $productDescription
+     * @param $stock
+     * @param $costInGBP
+     * @param $discontinued
+     */
     public function __construct($productCode, $productName, $productDescription, $stock, $costInGBP, $discontinued) {
         $this->productCode = $productCode;
         $this->productName = $productName;
@@ -148,5 +157,4 @@ class ItemProduct
     {
         $this->discontinued = $discontinued;
     }
-
 }

@@ -8,8 +8,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\ImportData\ImportResult;
 
+
 /**
  * Class to adding data in DB
+ *
+ * Class AddDataToDb
+ * @package App\Service
  */
 class AddDataToDb
 {
@@ -23,12 +27,22 @@ class AddDataToDb
     */
     public ValidatorInterface $validator;
 
+    /**
+     * AddDataToDb constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ValidatorInterface $validator
+     */
     public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
     }
 
+    /**
+     * Add data in to DB
+     * @param ImportResult $objFilterData
+     * @return ImportResult
+     */
     public function add(ImportResult $objFilterData) :ImportResult
     {
         $entityManager = $this->entityManager;
@@ -52,7 +66,7 @@ class AddDataToDb
                         $value->getCostInGBP()
                     );
 
-                    // если попадаеться дублирующая запись, то получаем ошибку и дальнейшие записи в базу не происходят
+                    // if was repeated item then get error and stopped add in to DB
                     $entityManager->persist($product);
                     $entityManager->flush();
                     unset($product);
