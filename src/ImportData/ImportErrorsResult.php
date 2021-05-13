@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace App\ImportData;
 
+/**
+ * Class ImportErrorsResult
+ * @package App\ImportData
+ */
 class ImportErrorsResult
 {
     /**
@@ -11,19 +15,16 @@ class ImportErrorsResult
     private array $errors = [];
 
     /**
-     * ImportErrorsResult constructor.
-     * @param $message
+     * @return array
      */
-    public function __construct($message)
+    public function getErrors() :array
     {
-        $this->errors[] = $message;
+        return $this->errors;
     }
 
-    public function getErrors() :string
-    {
-        return $this->errors[0];
-    }
-
+    /**
+     * @return bool
+     */
     public function hasErrors() :bool
     {
         if (count($this->errors) > 0) {
@@ -31,7 +32,10 @@ class ImportErrorsResult
         } else return false;
     }
 
-    public function addError($message)
+    /**
+     * @param $message
+     */
+    public function addError($message) :void
     {
         $this->errors[] = $message;
     }

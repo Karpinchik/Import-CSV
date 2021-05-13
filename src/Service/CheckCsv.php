@@ -5,6 +5,9 @@ namespace App\Service;
 
 /**
  * To check format the input file. The should be - .csv
+ *
+ * Class CheckCsv
+ * @package App\Service
  */
 class CheckCsv
 {

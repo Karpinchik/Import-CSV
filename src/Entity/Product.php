@@ -102,16 +102,26 @@ final class Product
         $this->cost = $cost;
     }
 
+    /**
+     * @return int|null
+     */
     public function getProductDataId(): ?int
     {
         return $this->productDataId;
     }
 
+    /**
+     * @return string|null
+     */
     public function getProductName(): ?string
     {
         return $this->productName;
     }
 
+    /**
+     * @param string $productName
+     * @return $this
+     */
     public function setProductName(string $productName): self
     {
         $this->productName = $productName;
@@ -119,11 +129,18 @@ final class Product
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getProductDesc(): ?string
     {
         return $this->productDesc;
     }
 
+    /**
+     * @param string $productDesc
+     * @return $this
+     */
     public function setProductDesc(string $productDesc): self
     {
         $this->productDesc = $productDesc;
@@ -131,11 +148,18 @@ final class Product
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getProductCode(): ?string
     {
         return $this->productCode;
     }
 
+    /**
+     * @param string $productCode
+     * @return $this
+     */
     public function setProductCode(string $productCode): self
     {
         $this->productCode = $productCode;
@@ -143,11 +167,18 @@ final class Product
         return $this;
     }
 
+    /**
+     * @return \DateTimeInterface|null
+     */
     public function getAdded(): ?\DateTimeInterface
     {
         return $this->added;
     }
 
+    /**
+     * @param \DateTimeInterface|null $added
+     * @return $this
+     */
     public function setAdded(?\DateTimeInterface $added): self
     {
         $this->added = $added;
@@ -155,11 +186,18 @@ final class Product
         return $this;
     }
 
+    /**
+     * @return \DateTimeInterface|null
+     */
     public function getDiscontinued(): ?\DateTimeInterface
     {
         return $this->discontinued;
     }
 
+    /**
+     * @param \DateTimeInterface|null $discontinued
+     * @return $this
+     */
     public function setDiscontinued(?\DateTimeInterface $discontinued): self
     {
         $this->discontinued = $discontinued;
@@ -167,23 +205,37 @@ final class Product
         return $this;
     }
 
+    /**
+     * @return \DateTimeInterface|null
+     */
     public function getTimestampDate(): ?\DateTimeInterface
     {
         return $this->timestampDate;
     }
 
-    public function setTimestampDate(\DateTimeInterface $timestampDate): self
+    /**
+     * @param \DateTime$timestampDate
+     * @return $this
+     */
+    public function setTimestampDate(\DateTime $timestampDate): self
     {
         $this->timestampDate = $timestampDate;
 
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getStock(): ?int
     {
         return $this->stock;
     }
 
+    /**
+     * @param int $stock
+     * @return $this
+     */
     public function setStock(int $stock): self
     {
         $this->stock = $stock;
@@ -191,11 +243,18 @@ final class Product
         return $this;
     }
 
+    /**
+     * @return float|null
+     */
     public function getCost(): ?float
     {
         return $this->cost;
     }
 
+    /**
+     * @param float $cost
+     * @return $this
+     */
     public function setCost(float $cost): self
     {
         $this->cost = $cost;

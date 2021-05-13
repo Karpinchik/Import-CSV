@@ -5,7 +5,6 @@ namespace App\Service;
 
 use App\ImportData\AllItemsAfterRead;
 use App\ImportData\ImportResult;
-use Symfony\Component\Validator\Validation;
 
 /**
  * Analyze, validate, filter object AllItemsAfterRead and return ImportResult
@@ -19,16 +18,14 @@ class Analyze
      * Analyze, validate, filter object AllItemsAfterRead and return ImportResult
      *
      * @param AllItemsAfterRead $getReadData
+     * @param ValidatorProduct $validatorProduct
      * @return ImportResult
      */
-    public function checkCostAndStock(AllItemsAfterRead $getReadData) :ImportResult
+    public function checkCostAndStock(AllItemsAfterRead $getReadData, ValidatorProduct $validatorProduct) :ImportResult
     {
         $relevantItems = [];
         $incorrectItems = [];
-
-        $validator = Validation::createValidatorBuilder()
-            ->enableAnnotationMapping()
-            ->getValidator();
+        $validator = $validatorProduct->getValidatorProduct();
 
         foreach ($getReadData->getAllProducts() as $value) {
             $error = $validator->validate($value);

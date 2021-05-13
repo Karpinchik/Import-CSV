@@ -8,7 +8,10 @@ use App\ImportData\ImportResult;
 
 /**
  * main container for services
-*/
+ *
+ * Class ImportCsv
+ * @package App\Service
+ */
 final class ImportCsv
 {
     /**
@@ -37,17 +40,25 @@ final class ImportCsv
     public ImportResult $objFilterData;
 
     /**
+     * @var ValidatorProduct
+     */
+    public ValidatorProduct $validatorProduct;
+
+    /**
      * @param CheckCsv $checkCsv
      * @param ReadCsv $readCsv
      * @param Analyze $analyze
      * @param AddDataToDb $addDataToDb
+     * @param ValidatorProduct $validatorProduct
     */
-    public function __construct(CheckCsv $checkCsv, ReadCsv $readCsv, Analyze $analyze, AddDataToDb $addDataToDb)
+    public function __construct(CheckCsv $checkCsv, ReadCsv $readCsv, Analyze $analyze, AddDataToDb $addDataToDb,
+                                ValidatorProduct $validatorProduct)
     {
         $this->checkCsv = $checkCsv;
         $this->readCsv = $readCsv;
         $this->analyze = $analyze;
         $this->addDataToDb = $addDataToDb;
+        $this->validatorProduct = $validatorProduct;
     }
 
     /**
@@ -56,31 +67,27 @@ final class ImportCsv
      * @param string $pathFile
      * @param bool $argument
      * @return ImportResult
+     * @throws \Exception
     */
     public function processImport(string $pathFile, bool $argument) :ImportResult
     {
+        $err = new ImportErrorsResult();
         $validFormat = $this->checkCsv->checkFormat($pathFile);
 
         if ($validFormat == false) {
-            $err = new ImportErrorsResult('Notice! File format does not use'.PHP_EOL);
-            die($err->getErrors());
+            $err->addError('Notice! File format does not use'.PHP_EOL);
         }
 
-        try {
-            $getReadData = $this->readCsv->deserializeFile($pathFile);
-        } catch (\Exception $exception) {
-            die($exception->getMessage().PHP_EOL);
-        }
+        $getReadData = $this->readCsv->deserializeFile($pathFile);
 
         if ($getReadData->getCount() == 0) {
-            $err =  new ImportErrorsResult('Notice! File not read'.PHP_EOL);
-            die($err->getErrors());
+            $err->addError('Notice! File format does not read'.PHP_EOL);
         }
 
         try {
-            $this->objFilterData = $this->analyze->checkCostAndStock($getReadData);
+            $this->objFilterData = $this->analyze->checkCostAndStock($getReadData, $this->validatorProduct);
         } catch (\Exception $exception) {
-            die($exception->getMessage().PHP_EOL);
+            $err->addError($exception->getMessage().PHP_EOL);
         }
 
         if ($argument == false) {

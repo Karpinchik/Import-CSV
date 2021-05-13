@@ -8,7 +8,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\ImportData\ImportResult;
 
-
 /**
  * Class to adding data in DB
  *
@@ -46,11 +45,14 @@ class AddDataToDb
     public function add(ImportResult $objFilterData) :ImportResult
     {
         $entityManager = $this->entityManager;
+        $repository = $entityManager->getRepository(Product::class);
 
-        try {
-            if (isset($objFilterData) and !empty($objFilterData)) {
-                foreach ($objFilterData->getRelevantItems() as $kay => $value) {
+        if (isset($objFilterData) and !empty($objFilterData)) {
+            foreach ($objFilterData->getRelevantItems() as $kay => $value) {
 
+                $newProduct = $repository->findOneBy(['productCode'=>$value->getProductCode()]);
+
+                if (!($newProduct)) {
                     if ($value->getDiscontinued() === 'yes') {
                         $dataTimeDiscontinued = new \DateTime();
                     } else {
@@ -66,14 +68,13 @@ class AddDataToDb
                         $value->getCostInGBP()
                     );
 
-                    // if was repeated item then get error and stopped add in to DB
                     $entityManager->persist($product);
                     $entityManager->flush();
                     unset($product);
+                } else {
+                    $entityManager->flush();
                 }
             }
-        } catch (\Exception $exception) {
-            die("Get duplicate products. Not added items in to DB.".PHP_EOL);
         }
 
         return $objFilterData;

@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace App\App\Commands;
 
-use App\Service\ImportCsv;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Helper\Table;
+use App\Service\ImportCsv;
 use App\ImportData\ImportResult;
 
 /**
@@ -60,40 +60,44 @@ final class ImportCsvCommand extends Command
             $pathFile = $io->ask('The path to CSV-file');
         } while ($pathFile === null);
 
-        $this->objFilterData = $this->process->processImport($pathFile, $argumentEnterMode);
+        try {
+            $this->objFilterData = $this->process->processImport($pathFile, $argumentEnterMode);
 
-        if($argumentEnterMode == true){
-            $io->note('Data not added. Test mode!');
-        }
-        else {
-            $io->success('Data added in to DB');
-        }
-
-        $allIncorrectItems = $this->objFilterData->getIncorrectItems();
-        $headers = (array)$this->objFilterData->getHeaders();
-        $output->writeln(['All got products ',]);
-        $output->writeln($this->objFilterData->getCountAllItems());
-        $output->writeln(['',]);
-        $output->writeln(['Relevant products ',]);
-        $output->writeln($this->objFilterData->getCountRelevantItems());
-        $output->writeln(['',]);
-        $output->writeln(['All incorrect products ',]);
-        $output->writeln($this->objFilterData->getCountIncorrectItems());
-        $output->writeln(['',]);
-        $output->writeln(['Not import these items',]);
-        $table = new Table($output);
-        $roles = [];
-
-        if ($allIncorrectItems) {
-            foreach ((array)$allIncorrectItems as $items => $item) {
-                array_push($roles, (array)$item);
+            if($argumentEnterMode == true){
+                $io->note('Data not added. Test mode!');
+            }
+            else {
+                $io->success('Data added in to DB');
             }
 
-            $table
-                ->setHeaders($headers)
-                ->setRows($roles)
-            ;
-            $table->render();
+            $allIncorrectItems = $this->objFilterData->getIncorrectItems();
+            $headers = (array)$this->objFilterData->getHeaders();
+            $output->writeln(['All got products ',]);
+            $output->writeln($this->objFilterData->getCountAllItems());
+            $output->writeln(['',]);
+            $output->writeln(['Relevant products ',]);
+            $output->writeln($this->objFilterData->getCountRelevantItems());
+            $output->writeln(['',]);
+            $output->writeln(['All incorrect products ',]);
+            $output->writeln($this->objFilterData->getCountIncorrectItems());
+            $output->writeln(['',]);
+            $output->writeln(['Not import these items',]);
+            $table = new Table($output);
+            $roles = [];
+
+            if ($allIncorrectItems) {
+                foreach ((array)$allIncorrectItems as $items => $item) {
+                    array_push($roles, (array)$item);
+                }
+
+                $table
+                    ->setHeaders($headers)
+                    ->setRows($roles)
+                ;
+                $table->render();
+            }
+        } catch (\Exception $exception) {
+            $output->writeln([$exception->getMessage()]);
         }
 
         return 1;

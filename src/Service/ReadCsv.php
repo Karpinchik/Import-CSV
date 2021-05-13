@@ -41,9 +41,10 @@ class ReadCsv
                 $record['Product Description'],
                 intval($record['Stock']),
                 floatval($record['Cost in GBP']),
-                strval($record['Discontinued']));
-                $this->arrayAllItems[$record['Product Code']] = $itemProduct;
-                unset($itemProduct);
+                strval($record['Discontinued'])
+            );
+            $this->arrayAllItems[$record['Product Code']] = $itemProduct;
+            unset($itemProduct);
         }
 
         return new AllItemsAfterRead($csv->getHeader(), $csv->count(), $this->arrayAllItems);
