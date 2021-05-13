@@ -12,31 +12,13 @@ class ImportErrorsResult
     /**
      * @var array
      */
-    private array $errors = [];
-
-    /**
-     * @return array
-     */
-    public function getErrors() :array
-    {
-        return $this->errors;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasErrors() :bool
-    {
-        if (count($this->errors) > 0) {
-            return true;
-        } else return false;
-    }
+    public static array $arrayErrors = [];
 
     /**
      * @param $message
      */
-    public function addError($message) :void
+    public static function addError($message) :void
     {
-        $this->errors[] = $message;
+        self::$arrayErrors[] = $message;
     }
 }

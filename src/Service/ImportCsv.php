@@ -71,27 +71,34 @@ final class ImportCsv
     */
     public function processImport(string $pathFile, bool $argument) :ImportResult
     {
-        $err = new ImportErrorsResult();
         $validFormat = $this->checkCsv->checkFormat($pathFile);
 
         if ($validFormat == false) {
-            $err->addError('Notice! File format does not use'.PHP_EOL);
+            ImportErrorsResult::addError('Notice! File format does not use'.PHP_EOL);
         }
 
-        $getReadData = $this->readCsv->deserializeFile($pathFile);
+        try {
+            $getReadData = $this->readCsv->deserializeFile($pathFile);
+        } catch (\Exception $exception) {
+            ImportErrorsResult::addError('Error! Does not deserialize the file'.PHP_EOL);
+        }
 
         if ($getReadData->getCount() == 0) {
-            $err->addError('Notice! File format does not read'.PHP_EOL);
+            ImportErrorsResult::addError('Notice! File format does not read'.PHP_EOL);
         }
 
         try {
             $this->objFilterData = $this->analyze->checkCostAndStock($getReadData, $this->validatorProduct);
         } catch (\Exception $exception) {
-            $err->addError($exception->getMessage().PHP_EOL);
+            ImportErrorsResult::addError('Error! Does not analyze data.'.PHP_EOL);
         }
 
         if ($argument == false) {
-            $this->addDataToDb->add($this->objFilterData);
+            try {
+                $this->addDataToDb->add($this->objFilterData);
+            } catch (\Exception $exception) {
+                ImportErrorsResult::addError('Error! Data not add in to DB'.PHP_EOL);
+            }
         }
 
         return $this->objFilterData;

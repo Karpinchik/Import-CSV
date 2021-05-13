@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\App\Commands;
 
+use App\ImportData\ImportErrorsResult;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,7 +55,7 @@ final class ImportCsvCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output) :int
     {
         $io = new SymfonyStyle($input, $output);
-        $argumentEnterMode = $input->getArgument('test') == "test" ? true : false;
+        $argumentEnterMode = $input->getArgument('test') === "test" ? true : false;
 
         do {
             $pathFile = $io->ask('The path to CSV-file');
@@ -97,7 +98,15 @@ final class ImportCsvCommand extends Command
                 $table->render();
             }
         } catch (\Exception $exception) {
-            $output->writeln([$exception->getMessage()]);
+            $arrayErrors = ImportErrorsResult::$arrayErrors;
+
+            if (!empty($arrayErrors)) {
+                foreach ($arrayErrors as $items=>$item) {
+                    $output->writeln([$item]);
+                }
+            } else {
+                $output->writeln([$exception->getMessage()]);
+            }
         }
 
         return 1;
