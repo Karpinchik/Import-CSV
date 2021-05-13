@@ -40,25 +40,17 @@ final class ImportCsv
     public ImportResult $objFilterData;
 
     /**
-     * @var ValidatorProduct
-     */
-    public ValidatorProduct $validatorProduct;
-
-    /**
      * @param CheckCsv $checkCsv
      * @param ReadCsv $readCsv
      * @param Analyze $analyze
      * @param AddDataToDb $addDataToDb
-     * @param ValidatorProduct $validatorProduct
     */
-    public function __construct(CheckCsv $checkCsv, ReadCsv $readCsv, Analyze $analyze, AddDataToDb $addDataToDb,
-                                ValidatorProduct $validatorProduct)
+    public function __construct(CheckCsv $checkCsv, ReadCsv $readCsv, Analyze $analyze, AddDataToDb $addDataToDb)
     {
         $this->checkCsv = $checkCsv;
         $this->readCsv = $readCsv;
         $this->analyze = $analyze;
         $this->addDataToDb = $addDataToDb;
-        $this->validatorProduct = $validatorProduct;
     }
 
     /**
@@ -88,7 +80,7 @@ final class ImportCsv
         }
 
         try {
-            $this->objFilterData = $this->analyze->checkCostAndStock($getReadData, $this->validatorProduct);
+            $this->objFilterData = $this->analyze->checkCostAndStock($getReadData);
         } catch (\Exception $exception) {
             ImportErrorsResult::addError('Error! Does not analyze data.'.PHP_EOL);
         }

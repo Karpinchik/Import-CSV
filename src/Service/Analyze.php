@@ -5,6 +5,7 @@ namespace App\Service;
 
 use App\ImportData\AllItemsAfterRead;
 use App\ImportData\ImportResult;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Analyze, validate, filter object AllItemsAfterRead and return ImportResult
@@ -15,20 +16,33 @@ use App\ImportData\ImportResult;
 class Analyze
 {
     /**
+     * @var ValidatorInterface
+     */
+    private ValidatorInterface $validator;
+
+    /**
+     * Analyze constructor.
+     * @param ValidatorInterface $validator
+     */
+    public function __construct(ValidatorInterface $validator)
+    {
+        $this->validator = $validator;
+    }
+
+    /**
      * Analyze, validate, filter object AllItemsAfterRead and return ImportResult
      *
      * @param AllItemsAfterRead $getReadData
-     * @param ValidatorProduct $validatorProduct
      * @return ImportResult
      */
-    public function checkCostAndStock(AllItemsAfterRead $getReadData, ValidatorProduct $validatorProduct) :ImportResult
+    public function checkCostAndStock(AllItemsAfterRead $getReadData) :ImportResult
     {
         $relevantItems = [];
         $incorrectItems = [];
-        $validator = $validatorProduct->getValidatorProduct();
 
         foreach ($getReadData->getAllProducts() as $value) {
-            $error = $validator->validate($value);
+            $error = $this->validator->validate($value);
+
             if (count($error) >= 1) {
                 $incorrectItems[] = $value;
             } else if (count($error) == 0) {
