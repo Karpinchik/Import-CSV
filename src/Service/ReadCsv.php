@@ -16,20 +16,15 @@ use League\Csv\Reader;
 class ReadCsv
 {
     /**
-     * @var array a temporary array with products to add to the constructor
-     */
-    public array $arrayAllItems;
-
-    /**
      * Deserialize csv in to object
      *
      * @param string $pathFile
      * @return AllItemsAfterRead
-     *
      * @throws \Exception
      */
     public function deserializeFile(string $pathFile): AllItemsAfterRead
     {
+        $arrayAllItems = [];
         $csv = Reader::createFromPath($pathFile, 'r');
         $csv->setHeaderOffset(0);
         $records = $csv->getRecords();
@@ -43,10 +38,10 @@ class ReadCsv
                 floatval($record['Cost in GBP']),
                 strval($record['Discontinued'])
             );
-            $this->arrayAllItems[$record['Product Code']] = $itemProduct;
+            $arrayAllItems[$record['Product Code']] = $itemProduct;
             unset($itemProduct);
         }
 
-        return new AllItemsAfterRead($csv->getHeader(), $csv->count(), $this->arrayAllItems);
+        return new AllItemsAfterRead($csv->getHeader(), $csv->count(), $arrayAllItems);
     }
 }

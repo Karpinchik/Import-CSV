@@ -53,7 +53,7 @@ class Analyze
         $countRelevant = count($relevantItems);
         $countIncorrect = $getReadData->getCount() - count($relevantItems);
 
-        $importResult = new ImportResult(
+        return new ImportResult(
             $relevantItems,
             $incorrectItems,
             $getReadData->getCount(),
@@ -61,7 +61,5 @@ class Analyze
             $countRelevant,
             $countIncorrect
         );
-
-        return $importResult;
     }
 }

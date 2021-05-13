@@ -35,11 +35,6 @@ final class ImportCsv
     private AddDataToDb $addDataToDb;
 
     /**
-     * @var ImportResult The array after filter
-    */
-    public ImportResult $objFilterData;
-
-    /**
      * @param CheckCsv $checkCsv
      * @param ReadCsv $readCsv
      * @param Analyze $analyze
@@ -63,6 +58,7 @@ final class ImportCsv
     */
     public function processImport(string $pathFile, bool $argument) :ImportResult
     {
+        // создать стразу объект IR
         $validFormat = $this->checkCsv->checkFormat($pathFile);
 
         if ($validFormat == false) {
@@ -80,19 +76,19 @@ final class ImportCsv
         }
 
         try {
-            $this->objFilterData = $this->analyze->checkCostAndStock($getReadData);
+            $objFilterData = $this->analyze->checkCostAndStock($getReadData);
         } catch (\Exception $exception) {
             ImportErrorsResult::addError('Error! Does not analyze data.'.PHP_EOL);
         }
 
         if ($argument == false) {
             try {
-                $this->addDataToDb->add($this->objFilterData);
+                $this->addDataToDb->add($objFilterData);
             } catch (\Exception $exception) {
                 ImportErrorsResult::addError('Error! Data not add in to DB'.PHP_EOL);
             }
         }
 
-        return $this->objFilterData;
+        return $objFilterData;
     }
 }

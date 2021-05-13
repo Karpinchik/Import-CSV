@@ -33,11 +33,6 @@ final class ImportCsvCommand extends Command
     }
 
     /**
-     * @var ImportResult
-    */
-    public ImportResult $objFilterData;
-
-    /**
      * {@inheritDoc}
      */
     protected function configure(): void
@@ -62,7 +57,7 @@ final class ImportCsvCommand extends Command
         } while ($pathFile === null);
 
         try {
-            $this->objFilterData = $this->process->processImport($pathFile, $argumentEnterMode);
+            $objFilterData = $this->process->processImport($pathFile, $argumentEnterMode);
 
             if($argumentEnterMode == true){
                 $io->note('Data not added. Test mode!');
@@ -71,16 +66,16 @@ final class ImportCsvCommand extends Command
                 $io->success('Data added in to DB');
             }
 
-            $allIncorrectItems = $this->objFilterData->getIncorrectItems();
-            $headers = (array)$this->objFilterData->getHeaders();
+            $allIncorrectItems = $objFilterData->getIncorrectItems();
+            $headers = (array)$objFilterData->getHeaders();
             $output->writeln(['All got products ',]);
-            $output->writeln($this->objFilterData->getCountAllItems());
+            $output->writeln($objFilterData->getCountAllItems());
             $output->writeln(['',]);
             $output->writeln(['Relevant products ',]);
-            $output->writeln($this->objFilterData->getCountRelevantItems());
+            $output->writeln($objFilterData->getCountRelevantItems());
             $output->writeln(['',]);
             $output->writeln(['All incorrect products ',]);
-            $output->writeln($this->objFilterData->getCountIncorrectItems());
+            $output->writeln($objFilterData->getCountIncorrectItems());
             $output->writeln(['',]);
             $output->writeln(['Not import these items',]);
             $table = new Table($output);
