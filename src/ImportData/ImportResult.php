@@ -40,6 +40,24 @@ class ImportResult
     private int $countIncorrectItems;
 
     /**
+     * ImportResult constructor.
+     * @param $relevantItems
+     * @param $incorrectItems
+     * @param $countAllItems
+     * @param $headers
+     * @param $countRelevantItems
+     * @param $countIncorrectItems
+     */
+    public function __construct($relevantItems, $incorrectItems, $countAllItems, $headers, $countRelevantItems, $countIncorrectItems) {
+        $this->relevantItems = $relevantItems;
+        $this->incorrectItems = $incorrectItems;
+        $this->countAllItems = $countAllItems;
+        $this->headers = $headers;
+        $this->countRelevantItems = $countRelevantItems;
+        $this->countIncorrectItems = $countIncorrectItems;
+    }
+
+    /**
      * @return array
      */
     public function getRelevantItems(): array
@@ -132,24 +150,6 @@ class ImportResult
      */
     public function setCountIncorrectItems(int $countIncorrectItems): void
     {
-        $this->countIncorrectItems = $countIncorrectItems;
-    }
-
-    /**
-     * ImportResult constructor.
-     * @param $relevantItems
-     * @param $incorrectItems
-     * @param $countAllItems
-     * @param $headers
-     * @param $countRelevantItems
-     * @param $countIncorrectItems
-     */
-    public function __construct($relevantItems, $incorrectItems, $countAllItems, $headers, $countRelevantItems, $countIncorrectItems) {
-        $this->relevantItems = $relevantItems;
-        $this->incorrectItems = $incorrectItems;
-        $this->countAllItems = $countAllItems;
-        $this->headers = $headers;
-        $this->countRelevantItems = $countRelevantItems;
         $this->countIncorrectItems = $countIncorrectItems;
     }
 }

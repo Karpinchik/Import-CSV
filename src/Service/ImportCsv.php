@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\ImportData\ImportErrorsResult;
-use App\ImportData\ImportResult;
+use App\ImportData\ParseData;
 
 /**
  * main container for services
@@ -35,60 +34,71 @@ final class ImportCsv
     private AddDataToDb $addDataToDb;
 
     /**
+     * @var ParseData Result object
+     */
+    private ParseData $parseData;
+
+    /**
      * @param CheckCsv $checkCsv
      * @param ReadCsv $readCsv
      * @param Analyze $analyze
      * @param AddDataToDb $addDataToDb
+     * @param ParseData $parseData
     */
-    public function __construct(CheckCsv $checkCsv, ReadCsv $readCsv, Analyze $analyze, AddDataToDb $addDataToDb)
+    public function __construct(CheckCsv $checkCsv, ReadCsv $readCsv, Analyze $analyze, AddDataToDb $addDataToDb,
+                                ParseData $parseData)
     {
         $this->checkCsv = $checkCsv;
         $this->readCsv = $readCsv;
         $this->analyze = $analyze;
         $this->addDataToDb = $addDataToDb;
+        $this->parseData = $parseData;
     }
 
     /**
      * Main process. Use services - CheckCsv, ReadCsv, Analyze, AddDataToDb
      *
      * @param string $pathFile
-     * @param bool $argument
-     * @return ImportResult
-     * @throws \Exception
+     * @param bool $isArgumentEnterMode
+     * @return ParseData
     */
-    public function processImport(string $pathFile, bool $argument) :ImportResult
+    public function processImport(string $pathFile, bool $isArgumentEnterMode) :ParseData
     {
-        // создать стразу объект IR
-        $validFormat = $this->checkCsv->checkFormat($pathFile);
+        $isValidFormat = $this->checkCsv->checkFormat($pathFile);
 
-        if ($validFormat == false) {
-            ImportErrorsResult::addError('Notice! File format does not use'.PHP_EOL);
+        if ($isValidFormat == false) {
+            $this->parseData->errorResult->setErrors('Notice! The format of this file is not used. You specified the path to a file with an unknown format.'.PHP_EOL);
+            return $this->parseData;
         }
 
         try {
             $getReadData = $this->readCsv->deserializeFile($pathFile);
         } catch (\Exception $exception) {
-            ImportErrorsResult::addError('Error! Does not deserialize the file'.PHP_EOL);
+            $this->parseData->errorResult->setErrors('Error! Does not deserialize the file'.PHP_EOL);
+            return $this->parseData;
         }
 
         if ($getReadData->getCount() == 0) {
-            ImportErrorsResult::addError('Notice! File format does not read'.PHP_EOL);
+            $this->parseData->errorResult->setErrors('Notice! There are no entries in the file.'.PHP_EOL);
+            return $this->parseData;
         }
 
         try {
-            $objFilterData = $this->analyze->checkCostAndStock($getReadData);
+            $this->parseData->importResult = $this->analyze->checkCostAndStock($getReadData);
         } catch (\Exception $exception) {
-            ImportErrorsResult::addError('Error! Does not analyze data.'.PHP_EOL);
+            $this->parseData->errorResult->setErrors('Error! Failed to parse the data.'.PHP_EOL);
+            return $this->parseData;
         }
 
-        if ($argument == false) {
+        if ($isArgumentEnterMode == false) {
             try {
-                $this->addDataToDb->add($objFilterData);
+                $this->addDataToDb->add($this->parseData->importResult);
             } catch (\Exception $exception) {
-                ImportErrorsResult::addError('Error! Data not add in to DB'.PHP_EOL);
+                $this->parseData->errorResult->setErrors('Error! Error while writing data to the database .'.PHP_EOL);
+                return $this->parseData;
             }
         }
 
-        return $objFilterData;
+        return $this->parseData;
     }
 }
