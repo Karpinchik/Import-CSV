@@ -15,6 +15,15 @@ class ErrorResult
     private string $error;
 
     /**
+     * ErrorResult constructor.
+     * @param string $error
+     */
+    public function __construct(string $error)
+    {
+        $this->error = $error;
+    }
+
+    /**
      * @param $errorMessage
      */
     public function setError($errorMessage) :void

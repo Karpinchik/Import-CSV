@@ -10,20 +10,52 @@ namespace App\ImportData;
 class ParseData
 {
     /**
-     * @var ImportResult
+     * @var ImportResult|null
      */
-    public ImportResult $importResult;
+    protected ?ImportResult $importResult;
 
     /**
-     * @var ErrorResult
+     * @var ErrorResult|null
      */
-    public ErrorResult $errorResult;
+    protected ?ErrorResult $errorResult;
 
     /**
      * ParseData constructor.
-     * @param ErrorResult $errorResult
      */
-    public function __construct(ErrorResult $errorResult)
+    public function __construct()
+    {
+        $this->errorResult = null;
+        $this->importResult = null;
+    }
+
+    /**
+     * @return ImportResult|null
+     */
+    public function getImportResult(): ?ImportResult
+    {
+        return $this->importResult;
+    }
+
+    /**
+     * @param ImportResult|null $importResult
+     */
+    public function setImportResult(?ImportResult $importResult): void
+    {
+        $this->importResult = $importResult;
+    }
+
+    /**
+     * @return ErrorResult|null
+     */
+    public function getErrorResult(): ?ErrorResult
+    {
+        return $this->errorResult;
+    }
+
+    /**
+     * @param ErrorResult|null $errorResult
+     */
+    public function setErrorResult(?ErrorResult $errorResult): void
     {
         $this->errorResult = $errorResult;
     }
@@ -33,10 +65,6 @@ class ParseData
      */
     public function hasErrors() :bool
     {
-        if (count((array)$this->errorResult) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return $this->getErrorResult() == null ? false : true;
     }
 }

@@ -59,7 +59,7 @@ final class ImportCsvCommand extends Command
             if ($resultParseData->hasErrors())
             {
                 $io->warning('Data not added in to DB');
-                $output->writeln($resultParseData->errorResult->getError());
+                $output->writeln($resultParseData->getErrorResult()->getError());
             } else {
 
                 if ($isArgumentEnterMode == true){
@@ -69,14 +69,14 @@ final class ImportCsvCommand extends Command
                     $io->success('Data added in to DB');
                 }
 
-                $allIncorrectItems = $resultParseData->importResult->getIncorrectItems();
-                $headers = $resultParseData->importResult->getHeaders();
+                $allIncorrectItems = $resultParseData->getImportResult()->getIncorrectItems();
+                $headers = $resultParseData->getImportResult()->getHeaders();
                 $output->writeln(['All got products ',]);
-                $output->writeln([$resultParseData->importResult->getCountAllItems(), '']);
+                $output->writeln([$resultParseData->getImportResult()->getCountAllItems(), '']);
                 $output->writeln(['Relevant products ',]);
-                $output->writeln([$resultParseData->importResult->getCountRelevantItems(), '']);
+                $output->writeln([$resultParseData->getImportResult()->getCountRelevantItems(), '']);
                 $output->writeln(['All incorrect products ',]);
-                $output->writeln([$resultParseData->importResult->getCountIncorrectItems(), '']);
+                $output->writeln([$resultParseData->getImportResult()->getCountIncorrectItems(), '']);
                 $output->writeln(['Not import these items',]);
                 $table = new Table($output);
                 $rows = [];
