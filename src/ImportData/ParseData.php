@@ -65,6 +65,6 @@ class ParseData
      */
     public function hasErrors() :bool
     {
-        return $this->getErrorResult() == null ? false : true;
+        return $this->getErrorResult() === null ? false : true;
     }
 }
