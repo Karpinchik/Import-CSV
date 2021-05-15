@@ -17,7 +17,7 @@ class ErrorResult
     /**
      * @param $errorMessage
      */
-    public function setErrors($errorMessage) :void
+    public function setError($errorMessage) :void
     {
         $this->error = $errorMessage;
     }
@@ -25,7 +25,7 @@ class ErrorResult
     /**
      * @return string
      */
-    public function getErrors(): string
+    public function getError(): string
     {
         return $this->error;
     }

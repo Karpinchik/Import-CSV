@@ -21,10 +21,8 @@ class CheckCsv
     {
         $ext = mb_strtolower(pathinfo($pathFile , PATHINFO_EXTENSION));
         if (isset($ext) && $ext == 'csv') {
-
             return true;
         } else {
-
             return false;
         }
     }

@@ -29,14 +29,6 @@ class ParseData
     }
 
     /**
-     * @return $this
-     */
-    public function getObject() :self
-    {
-        return $this;
-    }
-
-    /**
      * @return bool
      */
     public function hasErrors() :bool

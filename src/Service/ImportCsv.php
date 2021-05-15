@@ -67,34 +67,34 @@ final class ImportCsv
         $isValidFormat = $this->checkCsv->checkFormat($pathFile);
 
         if ($isValidFormat == false) {
-            $this->parseData->errorResult->setErrors('Notice! The format of this file is not used. You specified the path to a file with an unknown format.'.PHP_EOL);
+            $this->parseData->errorResult->setError('Notice! The format of this file is not used. You specified the path to a file with an unknown format.'.PHP_EOL);
             return $this->parseData;
         }
 
         try {
             $getReadData = $this->readCsv->deserializeFile($pathFile);
         } catch (\Exception $exception) {
-            $this->parseData->errorResult->setErrors('Error! Does not deserialize the file'.PHP_EOL);
+            $this->parseData->errorResult->setError('Error! Does not deserialize the file'.PHP_EOL);
             return $this->parseData;
         }
 
         if ($getReadData->getCount() == 0) {
-            $this->parseData->errorResult->setErrors('Notice! There are no entries in the file.'.PHP_EOL);
+            $this->parseData->errorResult->setError('Notice! There are no entries in the file.'.PHP_EOL);
             return $this->parseData;
         }
 
         try {
             $this->parseData->importResult = $this->analyze->checkCostAndStock($getReadData);
         } catch (\Exception $exception) {
-            $this->parseData->errorResult->setErrors('Error! Failed to parse the data.'.PHP_EOL);
+            $this->parseData->errorResult->setError('Error! Failed to parse the data.'.PHP_EOL);
             return $this->parseData;
         }
-
         if ($isArgumentEnterMode == false) {
             try {
                 $this->addDataToDb->add($this->parseData->importResult);
             } catch (\Exception $exception) {
-                $this->parseData->errorResult->setErrors('Error! Error while writing data to the database .'.PHP_EOL);
+                $this->parseData->errorResult
+                    ->setError('Error! Error while writing data to the database .'.PHP_EOL);
                 return $this->parseData;
             }
         }

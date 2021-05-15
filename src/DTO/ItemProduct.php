@@ -53,7 +53,8 @@ class ItemProduct
      * @param $costInGBP
      * @param $discontinued
      */
-    public function __construct($productCode, $productName, $productDescription, $stock, $costInGBP, $discontinued) {
+    public function __construct($productCode, $productName, $productDescription, $stock, $costInGBP, $discontinued)
+    {
         $this->productCode = $productCode;
         $this->productName = $productName;
         $this->productDescription = $productDescription;

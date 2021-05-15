@@ -5,9 +5,9 @@ namespace App\App\Commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Helper\Table;
 use App\Service\ImportCsv;
 
@@ -56,10 +56,10 @@ final class ImportCsvCommand extends Command
 
             $resultParseData = $this->process->processImport($pathFile, $isArgumentEnterMode);
 
-            if($resultParseData->hasErrors())
+            if ($resultParseData->hasErrors())
             {
                 $io->warning('Data not added in to DB');
-                $output->writeln([$resultParseData->errorResult->getErrors()]);
+                $output->writeln($resultParseData->errorResult->getError());
             } else {
 
                 if ($isArgumentEnterMode == true){
@@ -70,28 +70,25 @@ final class ImportCsvCommand extends Command
                 }
 
                 $allIncorrectItems = $resultParseData->importResult->getIncorrectItems();
-                $headers = (array)$resultParseData->importResult->getHeaders();
+                $headers = $resultParseData->importResult->getHeaders();
                 $output->writeln(['All got products ',]);
-                $output->writeln($resultParseData->importResult->getCountAllItems());
-                $output->writeln(['',]);
+                $output->writeln([$resultParseData->importResult->getCountAllItems(), '']);
                 $output->writeln(['Relevant products ',]);
-                $output->writeln($resultParseData->importResult->getCountRelevantItems());
-                $output->writeln(['',]);
+                $output->writeln([$resultParseData->importResult->getCountRelevantItems(), '']);
                 $output->writeln(['All incorrect products ',]);
-                $output->writeln($resultParseData->importResult->getCountIncorrectItems());
-                $output->writeln(['',]);
+                $output->writeln([$resultParseData->importResult->getCountIncorrectItems(), '']);
                 $output->writeln(['Not import these items',]);
                 $table = new Table($output);
-                $roles = [];
+                $rows = [];
 
                 if ($allIncorrectItems) {
-                    foreach ((array)$allIncorrectItems as $items => $item) {
-                        array_push($roles, (array)$item);
+                    foreach ($allIncorrectItems as $items => $item) {
+                        array_push($rows, (array)$item);
                     }
 
                     $table
                         ->setHeaders($headers)
-                        ->setRows($roles)
+                        ->setRows($rows)
                     ;
                     $table->render();
                 }

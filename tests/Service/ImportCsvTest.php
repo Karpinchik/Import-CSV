@@ -3,32 +3,22 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
+use App\ImportData\ErrorResult;
+use App\ImportData\ImportResult;
+use App\ImportData\ParseData;
 use PHPUnit\Framework\TestCase;
-use App\DTO\ImportCsv;
-use App\DTO\Analyze;
-use App\DTO\ReadCsv;
-use App\DTO\CheckCsv;
-use App\DTO\AddDataToDb;
+use App\Service\ImportCsv;
 
 class ImportCsvTest extends TestCase
 {
     public function testProcessImport(): void
     {
-        $stubCheckCsv = $this->createMock(CheckCsv::class);
-        $stubCheckCsv->method('checkFormat')
-                     ->willReturn(true);
-        $stubReadCSv = $this->createMock(ReadCsv::class);
-        $stubReadCSv->method('deserializeFile')
-                    ->willReturn(['count' => 4]);
-        $stubAnalyze = $this->createMock(Analyze::class);
-        $stubAnalyze->method('checkCostAndStock')
-                    ->willReturn((object)[]);
-        $stubAddDataToDb = $this->createMock(AddDataToDb::class);
-        $stubAddDataToDb->method('add')
-                        ->willReturn((object)[]);
-        $obj = new ImportCsv($stubCheckCsv, $stubReadCSv, $stubAnalyze, $stubAddDataToDb);
-        $res = $obj->processImport('stock.csv', true);
-        $obj->objFilterData = $res;
+        $stubErrorResult = $this->createMock(ErrorResult::class);
+        $stubImportResult = $this->createMock(ImportResult::class);
+        $stubParseData = new ParseData($stubErrorResult);
+        $stubParseData->importResult = $stubImportResult;
+        $objImportCsv = $this->createMock(ImportCsv::class);
+        $res = $objImportCsv->processImport("test.csv", true);
         $this->assertIsObject($res);
     }
 }

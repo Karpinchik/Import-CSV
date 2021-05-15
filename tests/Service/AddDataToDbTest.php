@@ -3,19 +3,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
+use App\ImportData\ImportResult;
 use PHPUnit\Framework\TestCase;
-use App\DTO\AddDataToDb;
+use App\Service\AddDataToDb;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AddDataToDbTest extends TestCase
 {
     public function testAdd(): void
     {
+        $objFilterData = $this->createMock(ImportResult::class);
         $stubEntityManagerInterface = $this->createMock(EntityManagerInterface::class);
-        $stubValidatorInterface = $this->createMock(ValidatorInterface::class);
-        $obj = new AddDataToDb($stubEntityManagerInterface, $stubValidatorInterface);
-        $res = $obj->add((object)[]);
-        $this->assertIsObject($res);
+        $objAddDataToDb = new AddDataToDb($stubEntityManagerInterface);
+        $result = $objAddDataToDb->add($objFilterData);
+        $this->assertIsObject($result);
     }
 }

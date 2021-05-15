@@ -90,7 +90,8 @@ final class Product
      * @param int $stock
      * @param float $cost
      */
-    public function __construct( string $productName, string $productDesc, string $productCode, $discontinued, int $stock, float $cost)
+    public function __construct( string $productName, string $productDesc, string $productCode, $discontinued,
+                                 int $stock, float $cost)
     {
         $this->productName = $productName;
         $this->productDesc = $productDesc;
