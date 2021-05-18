@@ -61,13 +61,6 @@ final class Product
     protected ?\DateTime $discontinued;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="TimestampDate", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
-     */
-    protected \DateTime $timestampDate;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="stock", type="integer", nullable=false)
@@ -98,7 +91,6 @@ final class Product
         $this->productCode = $productCode;
         $this->added = new \DateTime();
         $this->discontinued = $discontinued;
-        $this->timestampDate = new \DateTime();
         $this->stock = $stock;
         $this->cost = $cost;
     }
@@ -202,25 +194,6 @@ final class Product
     public function setDiscontinued(?\DateTimeInterface $discontinued): self
     {
         $this->discontinued = $discontinued;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTimeInterface|null
-     */
-    public function getTimestampDate(): ?\DateTimeInterface
-    {
-        return $this->timestampDate;
-    }
-
-    /**
-     * @param \DateTime$timestampDate
-     * @return $this
-     */
-    public function setTimestampDate(\DateTime $timestampDate): self
-    {
-        $this->timestampDate = $timestampDate;
 
         return $this;
     }

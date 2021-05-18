@@ -13,12 +13,10 @@ class ProductAdmin extends AbstractAdmin
 {
     protected function configureFormFields(FormMapper $formMapper): void
     {
-        $data = new \DateTime;
         $formMapper
             ->add('productName',  TextType::class)
             ->add('productDesc',  TextType::class)
             ->add('productCode',  TextType::class)
-            ->add('timestampDate',null, array('data' => $data))
             ->add('stock',  TextType::class)
             ->add('cost',  TextType::class)
         ;
