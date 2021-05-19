@@ -18,3 +18,5 @@ framework:
 
     translator:
         fallbacks: ['%locale%']
+
+    validation: { enable_annotations: true }

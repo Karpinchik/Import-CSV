@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -24,7 +25,6 @@ final class Product
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected int $productDataId;
-
     /**
      * @var string
      *
@@ -64,6 +64,9 @@ final class Product
      * @var int
      *
      * @ORM\Column(name="stock", type="integer", nullable=false)
+     *
+     * @Assert\GreaterThan(9)
+     * @Assert\Positive()
      */
     protected int $stock;
 
@@ -71,6 +74,11 @@ final class Product
      * @var float
      *
      * @ORM\Column(name="cost", type="float", precision=10, scale=0, nullable=false)
+     *
+     * @Assert\Type("float")
+     * @Assert\Positive()
+     * @Assert\LessThan(999.99)
+     * @Assert\GreaterThan(4.99)
      */
     protected float $cost;
 
