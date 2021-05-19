@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use App\Form\DataMapping\ProductDataMapper;
 
 /**
  * Class ProductAdmin
@@ -43,7 +44,8 @@ class ProductAdmin extends AbstractAdmin
                 ->add('productDesc',  TextareaType::class, array('help' => 'Enter product description'))
             ->end()
             ->with('Product data', [ 'class' => 'col-md-8'])
-                ->add('added', null, array('data' => $data))
+//                ->add('added', null, array('data' => $data))
+                ->add('added')
                 ->add('discontinued', null, array('help' => 'Enter data if product discontinued'))
 
             ->end()
@@ -52,6 +54,8 @@ class ProductAdmin extends AbstractAdmin
                 ->add('cost',  MoneyType::class, array('currency' => 'RUB', 'help' => 'Enter cost product'))
             ->end()
         ;
+        $builder = $formMapper->getFormBuilder();
+        $builder->setDataMapper(new ProductDataMapper());
     }
 
     /**
