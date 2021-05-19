@@ -18,7 +18,7 @@ class ProductDataMapper implements DataMapperInterface
         if (null !== $data) {
             $forms = iterator_to_array($forms);
 
-            if(null === $data->getProductDataId()){
+            if($data->getProductDataId()){
                 $forms['added']->setData($data->getAdded());
             }
         }
@@ -30,7 +30,7 @@ class ProductDataMapper implements DataMapperInterface
      */
     public function mapFormsToData($forms, &$data)
     {
-        if (null === $data->getProductDataId()) {
+        if (null === $data) {
             $forms = iterator_to_array($forms);
             $productName = $forms['productName']->getData();
             $productDesc = $forms['productDesc']->getData();
