@@ -15,12 +15,20 @@ class ProductDataMapper implements DataMapperInterface
      */
     public function mapDataToForms($data, $forms)
     {
-        if (null !== $data) {
+        $dateNow = new \DateTime();
+        if ($data !== null) {
             $forms = iterator_to_array($forms);
-
-            if($data->getProductDataId()){
-                $forms['added']->setData($data->getAdded());
-            }
+            $forms['productName']->setData($data->getProductName());
+            $forms['productCode']->setData($data->getProductCode());
+            $forms['productDesc']->setData($data->getProductDesc());
+            $forms['added']->setData($data->getAdded());
+            $forms['discontinued']->setData($data->getDiscontinued());
+            $forms['stock']->setData($data->getStock());
+            $forms['cost']->setData($data->getCost());
+        }
+        else {
+            $forms['added']->setData($dateNow);
+            $forms['discontinued']->setData($dateNow);
         }
     }
 
@@ -30,7 +38,7 @@ class ProductDataMapper implements DataMapperInterface
      */
     public function mapFormsToData($forms, &$data)
     {
-        if (null === $data) {
+        if ($data === null) {
             $forms = iterator_to_array($forms);
             $productName = $forms['productName']->getData();
             $productDesc = $forms['productDesc']->getData();
@@ -38,7 +46,10 @@ class ProductDataMapper implements DataMapperInterface
             $discontinued = $forms['discontinued']->getData();
             $stock = $forms['stock']->getData();
             $cost = $forms['cost']->getData();
-            $data = new Product(  $productName,  $productDesc,  $productCode, $discontinued, $stock,  $cost);
+            $data = new Product($productName,  $productDesc,  $productCode, $discontinued, $stock,  $cost);
+        } else {
+            $forms = iterator_to_array($forms);
+            $data->update($forms);
         }
     }
 }

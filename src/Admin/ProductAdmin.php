@@ -36,7 +36,6 @@ class ProductAdmin extends AbstractAdmin
      */
     protected function configureFormFields(FormMapper $formMapper): void
     {
-        $data = new \DateTime;
         $formMapper
             ->with('Product inform', [ 'class' => 'col-md-8'])
                 ->add('productName',  TextType::class, array('help' => 'Enter product name'))
@@ -44,18 +43,16 @@ class ProductAdmin extends AbstractAdmin
                 ->add('productDesc',  TextareaType::class, array('help' => 'Enter product description'))
             ->end()
             ->with('Product data', [ 'class' => 'col-md-8'])
-//                ->add('added', null, array('data' => $data))
                 ->add('added')
                 ->add('discontinued', null, array('help' => 'Enter data if product discontinued'))
-
             ->end()
             ->with('Product characteristics', [ 'class' => 'col-md-8'])
                 ->add('stock',  IntegerType::class, array('help' => 'Enter stock'))
                 ->add('cost',  MoneyType::class, array('currency' => 'RUB', 'help' => 'Enter cost product'))
             ->end()
         ;
-        $builder = $formMapper->getFormBuilder();
-        $builder->setDataMapper(new ProductDataMapper());
+//        $builder = $formMapper->getFormBuilder();
+//        $builder->setDataMapper(new ProductDataMapper());
     }
 
     /**

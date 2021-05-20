@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @UniqueEntity("productCode")
  */
-final class Product
+class Product
 {
     /**
      * @var int
@@ -242,5 +242,17 @@ final class Product
         $this->cost = $cost;
 
         return $this;
+    }
+
+//    public function update($productName,  $productDesc,  $productCode, $discontinued, $stock,  $cost)
+    public function update($forms)
+    {
+        $this->productName = $forms['productName']->getData();
+        $this->productDesc = $forms['productDesc']->getData();
+        $this->productCode = $forms['productCode']->getData();
+        $this->added = $forms['added']->getData();
+        $this->discontinued = $forms['discontinued']->getData();
+        $this->stock = $forms['stock']->getData();
+        $this->cost = $forms['cost']->getData();
     }
 }
