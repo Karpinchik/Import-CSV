@@ -7,12 +7,13 @@ use App\Entity\Product;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Form\Type\ChoiceFieldMaskType;
 use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use App\Form\DataMapping\ProductDataMapper;
+use Symfony\Component\Form\CallbackTransformer;
 
 /**
  * Class ProductAdmin
@@ -36,23 +37,37 @@ class ProductAdmin extends AbstractAdmin
      */
     protected function configureFormFields(FormMapper $formMapper): void
     {
+        $dataNow = new \DateTime();
         $formMapper
-            ->with('Product inform', [ 'class' => 'col-md-8'])
+            ->with('Product information', [ 'class' => 'col-md-8'])
                 ->add('productName',  TextType::class, array('help' => 'Enter product name'))
                 ->add('productCode',  TextType::class, array('help' => 'Enter product code'))
                 ->add('productDesc',  TextareaType::class, array('help' => 'Enter product description'))
             ->end()
             ->with('Product data', [ 'class' => 'col-md-8'])
                 ->add('added')
-                ->add('discontinued', null, array('help' => 'Enter data if product discontinued'))
+            ->add('discontinued', ChoiceFieldMaskType::class, [
+                'choices' => [
+                    'yes' => $dataNow,
+                    'no' => null,
+                ]
+            ])
             ->end()
             ->with('Product characteristics', [ 'class' => 'col-md-8'])
                 ->add('stock',  IntegerType::class, array('help' => 'Enter stock'))
                 ->add('cost',  MoneyType::class, array('currency' => 'RUB', 'help' => 'Enter cost product'))
             ->end()
         ;
-//        $builder = $formMapper->getFormBuilder();
-//        $builder->setDataMapper(new ProductDataMapper());
+
+        $formMapper->get('added')
+            ->addModelTransformer(new CallbackTransformer(
+                function () use ($dataNow){
+                    return $dataNow;
+                },
+                function () use ($dataNow) {
+                    return $dataNow;
+                }
+            ));
     }
 
     /**
