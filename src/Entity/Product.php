@@ -244,15 +244,50 @@ class Product
         return $this;
     }
 
-//    public function update($productName,  $productDesc,  $productCode, $discontinued, $stock,  $cost)
-    public function update($forms)
+    /**
+     * @return int
+     */
+    public function getDiscontinuedFlag(): int
     {
-        $this->productName = $forms['productName']->getData();
-        $this->productDesc = $forms['productDesc']->getData();
-        $this->productCode = $forms['productCode']->getData();
-        $this->added = $forms['added']->getData();
-        $this->discontinued = $forms['discontinued']->getData();
-        $this->stock = $forms['stock']->getData();
-        $this->cost = $forms['cost']->getData();
+        return $this->getDiscontinued() !== null ? 1 : 0;
+    }
+
+    /**
+     * @param int $flag
+     * @return $this
+     */
+    public function setDiscontinuedFlag(int $flag): self
+    {
+        if ($flag === 1) {
+            $this->setDiscontinued(new \DateTime());
+        } elseif ($flag === 0) {
+            $this->setDiscontinued(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getAddedFlag()  :int
+    {
+        return $this->getAdded() !== null ? 1 : 0;
+    }
+
+    /**
+     * @param int
+     * @return $this
+     */
+    public function setAddedFlag(int $flag): self
+    {
+        if ($flag === 1) {
+            $this->setAdded(new \DateTime());
+        } elseif ($flag === 0) {
+            $this->setAdded(null);
+        }
+
+        return $this;
     }
 }
