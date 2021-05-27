@@ -39,6 +39,7 @@ final class ImportCsvCommand extends Command
             ->setName('command:import')
             ->setDescription('This command import CSV in DB.')
             ->addArgument('test', InputArgument::OPTIONAL)
+            ->addArgument('path', InputArgument::OPTIONAL)
         ;
     }
 
@@ -51,9 +52,12 @@ final class ImportCsvCommand extends Command
         $isArgumentEnterMode = $input->getArgument('test') === "test" ? true : false;
 
         do {
-            $pathFile = $io->ask('The path to CSV-file');
-        } while ($pathFile === null);
+            $pathFile = $input->hasArgument('path') ? $input->getArgument('path') : null;
 
+            if ($pathFile === null) {
+                $pathFile = $io->ask('The path to CSV-file');
+            }
+        } while ($pathFile === null);
             $resultParseData = $this->process->processImport($pathFile, $isArgumentEnterMode);
 
             if ($resultParseData->hasErrors())
