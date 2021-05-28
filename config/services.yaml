@@ -19,7 +19,7 @@ services:
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
-            - '../src/Kernel.php'
+#            - '../src/Kernel.php'
             - '../src/Tests/'
             - '../src/DTO/'
             - '../src/Admin/'
@@ -33,9 +33,8 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    admin.category:
+    admin.product:
         class: App\Admin\ProductAdmin
         arguments: [~, App\Entity\Product, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, label: Product }
-

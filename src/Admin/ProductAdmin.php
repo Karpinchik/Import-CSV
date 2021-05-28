@@ -9,12 +9,11 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\CallbackTransformer;
+
 
 /**
  * Class ProductAdmin
@@ -39,19 +38,19 @@ class ProductAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper): void
     {
         $formMapper
-            ->with('Product information', [ 'class' => 'col-md-8'])
-                ->add('productName',  TextType::class, array('help' => 'Enter product name'))
-                ->add('productCode',  TextType::class, array('help' => 'Enter product code'))
-                ->add('productDesc',  TextareaType::class, array('help' => 'Enter product description'))
+            ->with('Product information', ['class' => 'col-md-8'])
+                ->add('productName', TextType::class, array('help' => 'Enter product name'))
+                ->add('productCode', TextType::class, array('help' => 'Enter product code'))
+                ->add('productDesc', TextareaType::class, array('help' => 'Enter product description'))
             ->end()
-            ->with('Prod', [ 'class' => 'visible-print-block'])
+            ->with('Prod', ['class' => 'visible-print-block'])
                 ->add('addedFlag', ChoiceType::class, array(
                     'choices' => [
                         'yes' => 1
                     ]
                 ))
             ->end()
-            ->with('Product data', [ 'class' => 'col-md-8'])
+            ->with('Product data', ['class' => 'col-md-8'])
                 ->add('discontinuedFlag', ChoiceType::class, array(
                     'choices' => [
                         'yes' => 1,
@@ -59,11 +58,10 @@ class ProductAdmin extends AbstractAdmin
                     ]
                 ))
             ->end()
-            ->with('Product characteristics', [ 'class' => 'col-md-8'])
-                ->add('stock',  IntegerType::class, array('help' => 'Enter stock'))
-                ->add('cost',  MoneyType::class, array('currency' => 'RUB', 'help' => 'Enter cost product'))
-            ->end()
-        ;
+            ->with('Product characteristics', ['class' => 'col-md-8'])
+                ->add('stock', IntegerType::class, array('help' => 'Enter stock'))
+                ->add('cost', MoneyType::class, array('currency' => 'RUB', 'help' => 'Enter cost product'))
+            ->end();
     }
 
     /**
@@ -76,8 +74,7 @@ class ProductAdmin extends AbstractAdmin
             ->add('productCode')
             ->add('added')
             ->add('stock')
-            ->add('cost')
-        ;
+            ->add('cost');
     }
 
     /**
@@ -92,7 +89,6 @@ class ProductAdmin extends AbstractAdmin
             ->addIdentifier('added')
             ->addIdentifier('discontinued')
             ->addIdentifier('stock')
-            ->addIdentifier('cost')
-        ;
+            ->addIdentifier('cost');
     }
 }
